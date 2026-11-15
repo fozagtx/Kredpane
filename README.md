@@ -1,66 +1,75 @@
 # Ratchet
 
-Support replies that get measurably better inside a single conversation.
+Rewrites hospital discharge instructions to a reading target, and proves nothing was lost on the way.
 
-Every reply is scored by an independent evaluation panel. If it does not ship, the reply is rewritten under a hard constraint built from the score, the route, the critique and the rubric — then scored again. The ledger shows both attempts side by side and the mean before/after across the conversation.
+## The problem
+
+- Nearly 9 in 10 US adults struggle with health information written in complex terms (CDC).
+- Only 12% have proficient health literacy (National Assessment of Adult Literacy).
+- AMA, HHS and NIH recommend patient materials at a **6th-grade level**; studies of real discharge documents find they sit above it.
+
+Low health literacy is estimated to cost ~1 million avoidable hospital visits and $25B+ a year.
+
+## What it does
+
+You paste source instructions and pick a target grade. The app rewrites, measures, and refuses to hand back text that lost a dose, a time or a phone number.
+
+Three checks per pass, all computed in code:
+
+1. **Reading grade** — Flesch–Kincaid.
+2. **Clinical terms** — abbreviations (`PO`, `BID`, `q6h`, `SpO2`) must reach zero; drug names are reported but allowed.
+3. **Facts kept** — every dose, duration, percentage and phone number from the source must survive verbatim.
+
+If a pass fails, the failure is fed back as the constraint for the next pass. Max three passes, and it stops early when nothing changes.
 
 ## Measured
 
-One real run on the free tier, same customer message both times:
+One real run on the bundled sample (pneumonia discharge), target grade 6:
 
-| | score | route | completeness | settle |
-| --- | --- | --- | --- | --- |
-| baseline reply | **69** | `review` | **14** | 64s |
-| rewrite under that verdict | **100** | `review` | **100** | 104s |
+| | reading grade | clinical terms | facts kept |
+| --- | --- | --- | --- |
+| source | 8.8 | 12 | 10/10 |
+| after pass 1 | **4.4** | **5** | **10/10** |
 
-The baseline says *"I am sorry for the inconvenience. Please contact our team and they will look into it."* The rewrite names the duplicate charge as a billing error, states the refund path, escalates, gives a timeframe, and asks exactly one question.
-
-The second run is still routed `review` at a perfect score, because the panel's confidence was medium. Acceptance therefore requires **route `ship` and score ≥ 80**, not score alone — and the loop stops after two attempts, because a perfect score the panel still wants a human to see is not a reason to keep rewriting.
-
-## The loop
-
-1. **Draft.** The baseline agent runs on SERV (`gpt-5.4`) under a deliberately thin prompt: two sentences, no diagnosis, no commitments. That is the "before".
-2. **Score.** Customer message plus reply go to Reppo as `taskType: "response"`.
-3. **Rewrite, if needed.** SERV regenerates the reply with the constraint derived from the verdict.
-4. **Re-score.** Both attempts land in the ledger with score, route, critique and rubric chips.
-
-Reppo verdicts are queued and take 60–100 seconds, so the UI shows a live scoring state rather than pretending the loop is instant. Credits are only charged when an evaluation settles.
+The remaining five terms are `pneumonia`, `amoxicillin-clavulanate`, `acetaminophen`, `saturation`, `emergency department` — reported, not silently dropped.
 
 ## Sponsor stack
 
-**SERV Reasoning (OpenServ)** — every generation. The baseline reply and the constrained rewrite are the same model with different instructions, so the delta comes from the constraint and not from a model swap.
+**SERV Reasoning (OpenServ)** — every rewrite pass, `https://inference-api.openserv.ai/v1`.
 
-**Reppo Evaluation API** — the panel. `POST /api/v1/agents/evals` with `taskType: "response"`, polled until `COMPLETED`. The rubric dimensions it returns are what the rewrite is held to.
+**Reppo Evaluation API** — optional independent panel on the final text (`taskType: "response"`). Async, 60–100 seconds, so it sits behind a button rather than blocking the loop.
 
-Dolphin and Kite are not wired. Nothing in this repo calls them.
+Dolphin and Kite are not wired.
 
 ## Run
 
 ```bash
 npm install
 export SERV_API_KEY=...
-export REPPO_API_KEY=...
-npm run dev            # http://localhost:3000
+export REPPO_API_KEY=...   # optional, enables the panel check
+npm run dev                # http://localhost:3000
 ```
 
-Routes: `/`, `/api/reply`, `/api/evaluate`, `/api/config`.
+Routes: `/`, `/api/improve`, `/api/evaluate`, `/api/config`.
 
 ## Layout
 
 ```
 app/
-  page.tsx              support loop
-  api/reply/route.ts    draft and constrained rewrite (SERV)
-  api/evaluate/route.ts submit + poll a Reppo evaluation
-  api/config/route.ts   which keys are present
+  page.tsx              before/after panes, metric cards, pass ledger
+  providers.tsx         Chakra provider
+  api/improve/route.ts  rewrite loop
+  api/evaluate/route.ts Reppo submit + poll
 lib/
-  support.ts            baseline prompt, constraint builder, scoring rules
+  readability.ts        Flesch-Kincaid, jargon matching, fact extraction
+  instructions.ts       prompts, feedback, loop control
   serv.ts               SERV chat client
   reppo.ts              Reppo client
 ```
 
 ## Limits
 
-- The baseline prompt is intentionally weak. That is the premise — the product is the constraint loop, not the baseline.
-- Scoring is one panel pass per attempt, not a statistical estimate.
-- Without `REPPO_API_KEY` the agent still replies but nothing is scored and the loop never triggers; the UI says so.
+- The model writes at grade 8–9 unprompted, so the gain is real but modest, not 14 → 6.
+- Flesch–Kincaid is gameable: dropping punctuation or using shorthand lowers the score without improving comprehension. That is why grade is paired with a jargon check and fact retention rather than trusted alone.
+- Fact extraction is regex over units, percentages and phone patterns. It catches dropped doses, not distorted meaning.
+- Without `REPPO_API_KEY` the loop still works; only the panel check is unavailable.

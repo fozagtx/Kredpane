@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
-import "./globals.css";
+import { Provider } from "./providers";
 
 export const metadata: Metadata = {
-  title: "Ratchet — support replies that improve under evaluation",
-  description: "Every reply is scored by an independent panel, and the next reply is rewritten against that score."
+  title: "Ratchet — instructions rewritten to a reading target",
+  description: "Hospital instructions rewritten to a grade level, with every dose, time and phone number verified as intact."
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body>
+        <Provider>{children}</Provider>
+      </body>
     </html>
   );
 }
