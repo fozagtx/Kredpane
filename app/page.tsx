@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Badge,
   Box,
@@ -40,6 +40,28 @@ export default function Page() {
   const [error, setError] = useState<string>("");
   const [result, setResult] = useState<Improvement | null>(null);
   const [panel, setPanel] = useState<{ status: "idle" | "pending" | "done" | "error"; verdict?: ReppoVerdict; error?: string }>({ status: "idle" });
+  const [extracting, setExtracting] = useState<boolean>(false);
+  const [docName, setDocName] = useState<string>("");
+  const [dragging, setDragging] = useState<boolean>(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  async function onFile(file: File): Promise<void> {
+    setExtracting(true);
+    setError("");
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      const res = await fetch("/api/extract", { method: "POST", body: form });
+      const data = (await res.json()) as { text?: string; name?: string; kind?: string; chars?: number; error?: string };
+      if (!res.ok || !data.text) throw new Error(data.error || "could not read the file");
+      setSource(data.text);
+      setDocName(`${data.name} · ${data.kind} · ${data.chars} characters`);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setExtracting(false);
+    }
+  }
 
   const finalPass = result ? result.passes[result.passes.length - 1] : null;
   const factsKept = result && finalPass ? result.facts - finalPass.missed.length : 0;
@@ -157,16 +179,48 @@ export default function Page() {
         ) : null}
 
         <SimpleGrid columns={{ base: 1, lg: 2 }} gap={4} mt={4}>
-          <Card.Root>
+          <Card.Root
+            borderColor={dragging ? "blue.400" : undefined}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragging(true);
+            }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setDragging(false);
+              const file = e.dataTransfer.files?.[0];
+              if (file) void onFile(file);
+            }}
+          >
             <Card.Header pb={3}>
-              <Flex align="center" gap={3}>
+              <Flex align="center" gap={3} wrap="wrap">
                 <Card.Title fontSize="sm" textTransform="uppercase" letterSpacing="wider" color="gray.500">
                   Source
                 </Card.Title>
                 <Badge ml="auto" colorPalette={result ? "gray" : "blue"} variant="subtle">
                   {result ? `grade ${result.before.grade}` : "editable"}
                 </Badge>
+                <Button size="xs" variant="outline" onClick={() => fileRef.current?.click()} disabled={extracting}>
+                  {extracting ? <Spinner size="xs" /> : "Upload PDF or photo"}
+                </Button>
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept="application/pdf,image/png,image/jpeg,image/webp"
+                  hidden
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) void onFile(file);
+                    e.target.value = "";
+                  }}
+                />
               </Flex>
+              <Text fontSize="xs" color="gray.500" mt={2}>
+                {extracting
+                  ? "Reading the document…"
+                  : docName || "Paste text, or drop a PDF or photo of the discharge paperwork here."}
+              </Text>
             </Card.Header>
             <Card.Body pt={0}>
               <Textarea

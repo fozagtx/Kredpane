@@ -12,7 +12,9 @@ Low health literacy is estimated to cost ~1 million avoidable hospital visits an
 
 ## What it does
 
-You paste source instructions and pick a target grade. The app rewrites, measures, and refuses to hand back text that lost a dose, a time or a phone number.
+You paste source instructions — or drop a PDF or a photo of the paperwork — and pick a target grade. The app rewrites, measures, and refuses to hand back text that lost a dose, a time or a phone number.
+
+Uploads: PDFs are parsed with `unpdf`; images (PNG/JPEG/WebP) are transcribed by SERV's vision model. A scanned PDF with no text layer is rejected with a message telling you to upload the photo instead.
 
 Three checks per pass, all computed in code:
 
