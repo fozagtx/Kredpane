@@ -1,6 +1,8 @@
 # Kredpane
 
-Reads a consumer contract before you sign it, scores how one-sided it is, and rewrites the unfair terms.
+**Contract review for people who don't have a lawyer.**
+
+Paste a lease, a gym membership or a terms of service. Kredpane finds the clauses that cost you money, rates how one-sided the document is out of 100, and rewrites those clauses so you know what to ask for before you sign.
 
 Live: **https://kredpane.vercel.app**
 
