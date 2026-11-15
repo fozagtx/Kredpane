@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Provider } from "./providers";
 
 export const metadata: Metadata = {
   title: "Kredpane — read the contract before you sign it",
@@ -16,7 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        <Provider>{children}</Provider>
+        {children}
       </body>
     </html>
   );

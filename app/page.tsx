@@ -2,22 +2,9 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Box, Button, Flex, HStack, Input, NativeSelect, Spinner, Text, Textarea } from "@chakra-ui/react";
 import type { Review } from "../lib/contract";
 import { NotchNavbar } from "../components/ui/notch-navbar";
 import LogoIcon from "../assets/logo/logo-icon";
-
-const YELLOW = "#d6ff34";
-const SURFACE_1 = "var(--s1)";
-const SURFACE_2 = "var(--s2)";
-const MUTED = "var(--muted)";
-const FOREGROUND = "var(--fg)";
-const ACCENT = "#3d5500";
-const MINT = "#5dffc0";
-const CYAN = "#71f6ff";
-const BLUE = "#7da2ff";
-const LAVENDER = "#c1adff";
-const CREAM = "var(--cream)";
 
 const SAMPLE = `GOLDEN FITNESS — MEMBERSHIP AGREEMENT
 
@@ -110,86 +97,69 @@ export default function Page() {
   }
 
   return (
-    <Box bg="var(--page)" color="#111111" minH="100vh" position="relative">
-      <Box
-        position="absolute"
-        top="-120px"
-        right="-120px"
-        w="600px"
-        h="600px"
-        pointerEvents="none"
-        zIndex={0}
+    <main className="min-h-screen bg-[color:var(--page)] text-[color:var(--fg)] relative">
+      <div
+        className="absolute -top-[120px] -right-[120px] w-[600px] h-[600px] pointer-events-none z-0"
         style={{ background: "radial-gradient(circle, rgba(214,255,52,0.55), transparent 70%)", filter: "blur(120px)" }}
       />
 
       <NotchNavbar
         logo={
-          <a href="/" className="flex items-center justify-center group">
-            <span className="w-8 h-8 rounded-[8px] bg-[#d6ff34] flex items-center justify-center group-hover:scale-105 transition-transform">
+          <a href="/" className="flex items-center justify-center">
+            <span className="w-8 h-8 rounded-[8px] bg-[#d6ff34] flex items-center justify-center">
               <LogoIcon className="w-5 h-5 text-black" />
             </span>
           </a>
         }
       />
 
-      <Box
+      <section
         id="top"
-        className="grid-pattern"
-        bg="var(--s1)"
-        borderBottom="1px solid var(--line)"
-        borderBottomRadius="64px"
-        pt="128px"
-        pb="110px"
-        position="relative"
-        zIndex={40}
+        className="grid-pattern bg-white border-b border-[color:var(--line)] rounded-b-[64px] pt-32 pb-28 relative z-40"
       >
-        <Box maxW="1700px" mx="auto" px={6}>
-          <Box textAlign="center" maxW="5xl" mx="auto" mb={14}>
-            <Text as="h1" fontSize={{ base: "48px", md: "88px" }} fontWeight="700" lineHeight="0.9" letterSpacing="tight" textTransform="uppercase">
+        <div className="max-w-[1700px] mx-auto px-6">
+          <div className="text-center max-w-5xl mx-auto mb-14">
+            <h1 className="text-[48px] md:text-[88px] font-bold uppercase leading-[0.9] tracking-tight">
               You hate reading<br />terms of service.
-            </Text>
-            <Text as="h2" fontSize={{ base: "36px", md: "88px" }} fontWeight="700" lineHeight="0.9" letterSpacing="tight" textTransform="uppercase" mt={2} mb={6}>
-              <Text as="span" bg={YELLOW} color="#000" px={3} style={{ boxDecorationBreak: "clone" }}>
-                We know.
-              </Text>
-            </Text>
-            <Text fontSize={{ base: "lg", md: "xl" }} color={MUTED} maxW="2xl" mx="auto" lineHeight="1.7">
+            </h1>
+            <h2 className="text-[36px] md:text-[88px] font-bold uppercase leading-[0.9] tracking-tight mt-2 mb-6">
+              <span className="bg-[#d6ff34] text-black px-3">We know.</span>
+            </h2>
+            <p className="text-lg md:text-xl text-[color:var(--muted)] max-w-2xl mx-auto leading-relaxed">
               We read the fine print so you don't have to. Paste, upload, or drop your ToS and we'll tell you exactly how bad it is and help you fight back.
-            </Text>
-          </Box>
+            </p>
+          </div>
 
-          <Box maxW="4xl" mx="auto" bg={SURFACE_1} borderRadius="30px" p={{ base: 2, md: 4 }} boxShadow="0 20px 50px -10px rgba(0,0,0,0.12)">
-            <Flex flexWrap="wrap" align="center" gap={2} p={4} pb={0} mb={6}>
-              <Button
-                onClick={() => { setTab("upload"); fileRef.current?.click(); }}
-                bg={tab === "upload" ? YELLOW : SURFACE_2}
-                color={tab === "upload" ? "#000" : MUTED}
-                px={6} py={3} h="auto" borderRadius="full" fontSize="13px" fontWeight="700" letterSpacing="1px" textTransform="uppercase"
-                _hover={{ bg: tab === "upload" ? "rgba(214,255,52,0.9)" : "var(--s3)" }}
+          <div className="max-w-4xl mx-auto bg-white rounded-[30px] p-2 md:p-4 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.12)]">
+            <div className="flex flex-wrap items-center gap-2 p-4 pb-0 mb-6">
+              <button
+                onClick={() => {
+                  setTab("upload");
+                  fileRef.current?.click();
+                }}
+                className={`px-6 py-3 rounded-full text-[13px] font-bold uppercase tracking-[1px] transition-colors ${
+                  tab === "upload" ? "bg-[#d6ff34] text-black" : "bg-[color:var(--s2)] text-[color:var(--muted)] hover:bg-[color:var(--s3)]"
+                }`}
               >
-                {extracting ? <Spinner size="xs" /> : "Upload PDF"}
-              </Button>
-              <Button
+                {extracting ? "Reading…" : "Upload PDF"}
+              </button>
+              <button
                 onClick={() => setTab("paste")}
-                bg={tab === "paste" ? YELLOW : SURFACE_2}
-                color={tab === "paste" ? "#000" : MUTED}
-                px={6} py={3} h="auto" borderRadius="full" fontSize="13px" fontWeight="700" letterSpacing="1px" textTransform="uppercase"
-                _hover={{ bg: tab === "paste" ? "rgba(214,255,52,0.9)" : "var(--s3)" }}
+                className={`px-6 py-3 rounded-full text-[13px] font-bold uppercase tracking-[1px] transition-colors ${
+                  tab === "paste" ? "bg-[#d6ff34] text-black" : "bg-[color:var(--s2)] text-[color:var(--muted)] hover:bg-[color:var(--s3)]"
+                }`}
               >
                 Paste text
-              </Button>
-              <Button
+              </button>
+              <button
                 onClick={() => setEmailHint(true)}
-                bg={SURFACE_2}
-                color={MUTED}
-                px={6} py={3} h="auto" borderRadius="full" fontSize="13px" fontWeight="700" letterSpacing="1px" textTransform="uppercase"
-                _hover={{ bg: "var(--s3)" }}
+                className="px-6 py-3 rounded-full text-[13px] font-bold uppercase tracking-[1px] bg-[color:var(--s2)] text-[color:var(--muted)] hover:bg-[color:var(--s3)] transition-colors"
               >
                 From Email
-              </Button>
-              <Text fontSize="11px" color={MUTED} ml="auto" display={{ base: "none", md: "block" }}>
+              </button>
+              <span className="text-[11px] text-[color:var(--muted)] ml-auto hidden md:block">
                 {docName || "PDF, PNG, JPEG or WebP"}
-              </Text>
+              </span>
               <input
                 ref={fileRef}
                 type="file"
@@ -201,292 +171,243 @@ export default function Page() {
                   e.target.value = "";
                 }}
               />
-            </Flex>
+            </div>
 
-            <Box px={4} pb={4}>
-              <Box mb={4}>
-                <Input
-                  value={company}
-                  onChange={(e) => setCompany(e.target.value)}
-                  placeholder="COMPANY NAME (OPTIONAL)"
-                  w="100%" bg={SURFACE_2} border="1px solid var(--line)" borderRadius="12px" px={6} py={4}
-                  h="auto" fontSize="sm" fontWeight="700" letterSpacing="wider" textTransform="uppercase" color="#111111"
-                  _placeholder={{ color: MUTED }}
-                  _focusVisible={{ outline: "none", borderColor: "rgba(61,85,0,0.6)" }}
-                />
-              </Box>
-              <Box h="240px">
-                <Textarea
-                  value={source}
-                  onChange={(e) => setSource(e.target.value)}
-                  spellCheck={false}
-                  placeholder="Paste the Terms of Service, Privacy Policy, or contract here..."
-                  w="100%" h="100%" bg={SURFACE_2} border="1px solid var(--line)" borderRadius="20px" p={6}
-                  fontSize="md" color="#111111" resize="none"
-                  _placeholder={{ color: MUTED }}
-                  _focusVisible={{ outline: "none", borderColor: "rgba(61,85,0,0.6)" }}
-                />
-              </Box>
+            <div className="px-4 pb-4">
+              <input
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+                placeholder="COMPANY NAME (OPTIONAL)"
+                className="w-full bg-[color:var(--s2)] border border-[color:var(--line)] rounded-[12px] px-6 py-4 mb-4 text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] placeholder:text-[color:var(--muted)] focus:outline-none focus:border-[color:var(--line-strong)]"
+              />
+              <textarea
+                value={source}
+                onChange={(e) => setSource(e.target.value)}
+                spellCheck={false}
+                placeholder="Paste the Terms of Service, Privacy Policy, or contract here..."
+                className="w-full h-[240px] bg-[color:var(--s2)] border border-[color:var(--line)] rounded-[20px] p-6 text-base text-[color:var(--fg)] placeholder:text-[color:var(--muted)] resize-none focus:outline-none focus:border-[color:var(--line-strong)]"
+              />
               {emailHint ? (
-                <Text fontSize="11px" color={MUTED} mt={2}>
+                <p className="text-[11px] text-[color:var(--muted)] mt-2">
                   Email import is not connected yet — paste the email text into the box above.
-                </Text>
+                </p>
               ) : null}
-            </Box>
+            </div>
 
-            <Flex p={4} pt={2} align="center" gap={3}>
-              <NativeSelect.Root size="sm" width="auto">
-                <NativeSelect.Field
-                  value={target}
-                  onChange={(e) => setTarget(e.target.value)}
-                  bg={SURFACE_2} color="#111111" border="1px solid var(--line-strong)" borderRadius="full"
-                  px={4} py={3} h="auto" fontSize="11px" fontWeight="700" letterSpacing="1px" textTransform="uppercase"
-                >
-                  {TARGETS.map((t) => (
-                    <option key={t.value} value={t.value} style={{ background: "#f6f6f1" }}>
-                      aim: {t.label}
-                    </option>
-                  ))}
-                </NativeSelect.Field>
-              </NativeSelect.Root>
-              <Button
+            <div className="flex items-center gap-3 p-4 pt-2">
+              <select
+                value={target}
+                onChange={(e) => setTarget(e.target.value)}
+                className="bg-[color:var(--s2)] text-[color:var(--fg)] border border-[color:var(--line-strong)] rounded-full px-4 py-3 text-[11px] font-bold uppercase tracking-[1px] focus:outline-none"
+              >
+                {TARGETS.map((t) => (
+                  <option key={t.value} value={t.value}>
+                    aim: {t.label}
+                  </option>
+                ))}
+              </select>
+              <button
                 onClick={() => void run()}
                 disabled={busy}
-                flex="1"
-                py={6}
-                h="auto"
-                borderRadius="full"
-                bg={YELLOW}
-                color="#000"
-                fontSize="lg"
-                fontWeight="700"
-                letterSpacing="2px"
-                textTransform="uppercase"
-                _hover={{ bg: "rgba(214,255,52,0.9)" }}
-                _active={{ transform: "scale(0.98)" }}
-                _disabled={{ opacity: 0.5, cursor: "not-allowed" }}
+                className="flex-1 py-6 rounded-full bg-[#d6ff34] text-black text-lg font-bold uppercase tracking-[2px] hover:bg-[#c9f22b] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {busy ? <><Spinner size="sm" /> Scanning</> : "Scan now →"}
-              </Button>
-            </Flex>
-            {error ? (
-              <Box px={4} pb={4}>
-                <Text color="#b91c1c" fontSize="sm" fontWeight="600">{error}</Text>
-              </Box>
-            ) : null}
-          </Box>
-        </Box>
-      </Box>
+                {busy ? "Scanning…" : "Scan now →"}
+              </button>
+            </div>
+            {error ? <p className="px-4 pb-4 text-sm font-semibold text-[#b91c1c]">{error}</p> : null}
+          </div>
+        </div>
+      </section>
 
-      <Box bg={SURFACE_1} borderBottomRadius="64px" pt="96px" pb="96px" position="relative" zIndex={30}>
-        <Box maxW="1700px" mx="auto" px={6}>
-          <Flex gap={6} direction={{ base: "column", md: "row" }}>
-            <StatCard label="The Problem" value="7.2B" color={ACCENT} text="Users affected by hidden data-selling clauses daily." />
-            <StatCard label="The Trap" value="89%" color={MINT} text="Of major services contain auto-renewal traps." />
-            <StatCard label="The Solution" value="3 MIN" color={CYAN} text="Average time to understand your rights with Kredpane." />
-          </Flex>
-        </Box>
-      </Box>
+      <section className="bg-white rounded-b-[64px] py-24 relative z-30">
+        <div className="max-w-[1700px] mx-auto px-6">
+          <div className="flex flex-col md:flex-row gap-6">
+            <StatCard label="The Problem" value="7.2B" color="#3d5500" text="Users affected by hidden data-selling clauses daily." />
+            <StatCard label="The Trap" value="89%" color="#0f7a4a" text="Of major services contain auto-renewal traps." />
+            <StatCard label="The Solution" value="3 MIN" color="#0f6b7a" text="Average time to understand your rights with Kredpane." />
+          </div>
+        </div>
+      </section>
 
-      <Box id="how" bg="var(--page)" borderBottomRadius="64px" pt="96px" pb="96px" position="relative" zIndex={20}>
-        <Box maxW="1700px" mx="auto" px={6}>
-          <Text as="h2" fontSize={{ base: "4xl", md: "56px" }} fontWeight="700" textTransform="uppercase" letterSpacing="tight" textAlign="center" mb={16}>
-            How it works
-          </Text>
-          <Flex gap={6} direction={{ base: "column", md: "row" }}>
+      <section id="how" className="py-24 relative z-20">
+        <div className="max-w-[1700px] mx-auto px-6">
+          <h2 className="text-4xl md:text-[56px] font-bold uppercase tracking-tight text-center mb-16">How it works</h2>
+          <div className="flex flex-col md:flex-row gap-6">
             <StepCard step="Step 01" title="Paste or upload" text="Drop the text, a PDF, or an email update into our scanner." />
-            <StepCard step="Step 02" title="AI scans everything" text="Our legal AI identifies dangerous clauses hidden in the jargon." mt={{ base: 0, md: 8 }} />
-            <StepCard step="Step 03" title="Fight back" text="Generate a professional pushback email with a single click." mt={{ base: 0, md: 16 }} />
-          </Flex>
-        </Box>
-      </Box>
+            <StepCard step="Step 02" title="AI scans everything" text="Our legal AI identifies dangerous clauses hidden in the jargon." className="md:mt-8" />
+            <StepCard step="Step 03" title="Fight back" text="Generate a professional pushback email with a single click." className="md:mt-16" />
+          </div>
+        </div>
+      </section>
 
-      <Box id="catch" bg={SURFACE_1} borderBottomRadius="64px" pt="96px" pb="96px" position="relative" zIndex={10}>
-        <Box maxW="1700px" mx="auto" px={6}>
-          <Text as="h2" fontSize={{ base: "4xl", md: "56px" }} fontWeight="700" textTransform="uppercase" letterSpacing="tight" textAlign="center" mb={16}>
-            What we catch
-          </Text>
-          <Box display="grid" gridTemplateColumns={{ base: "1fr", md: "1fr 1fr", lg: "repeat(4, 1fr)" }} gap={6}>
-            <CatchCard title="Data selling" text="When companies quietly grant themselves the right to broker your personal info to third parties." bg={BLUE} ink="#000434" />
-            <CatchCard title="Auto-renew traps" text="Concealed subscription terms that make it intentionally difficult to cancel billing." bg={MINT} ink="#003f18" />
-            <CatchCard title="Forced arbitration" text="Clauses that strip away your right to sue or join class-action lawsuits if wronged." bg={CYAN} ink="#204150" />
-            <CatchCard title="Account exit" text="Rights to delete your account and confiscate your content for any reason, without notice." bg={LAVENDER} ink="#4d2050" />
-          </Box>
-        </Box>
-      </Box>
+      <section id="catch" className="bg-white rounded-b-[64px] py-24 relative z-10">
+        <div className="max-w-[1700px] mx-auto px-6">
+          <h2 className="text-4xl md:text-[56px] font-bold uppercase tracking-tight text-center mb-16">What we catch</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <CatchCard title="Data selling" text="When companies quietly grant themselves the right to broker your personal info to third parties." bg="#7da2ff" ink="#000434" />
+            <CatchCard title="Auto-renew traps" text="Concealed subscription terms that make it intentionally difficult to cancel billing." bg="#5dffc0" ink="#003f18" />
+            <CatchCard title="Forced arbitration" text="Clauses that strip away your right to sue or join class-action lawsuits if wronged." bg="#71f6ff" ink="#204150" />
+            <CatchCard title="Account exit" text="Rights to delete your account and confiscate your content for any reason, without notice." bg="#c1adff" ink="#4d2050" />
+          </div>
+        </div>
+      </section>
 
-      <Box id="about" bg="var(--page)" borderBottomRadius="64px" pt="96px" pb="96px" position="relative" zIndex={9}>
-        <Box maxW="1200px" mx="auto" px={6}>
-          <Box textAlign="center" mb={16}>
-            <Text fontSize="11px" fontWeight="700" textTransform="uppercase" letterSpacing="2px" color={ACCENT} mb={4}>Our Mission</Text>
-            <Text as="h2" fontSize={{ base: "4xl", md: "64px" }} fontWeight="700" textTransform="uppercase" lineHeight="0.95" letterSpacing="tight">
-              The fine print<br /><Text as="span" bg={YELLOW} color="#000" px={2}>shouldn't be</Text><br />a trap.
-            </Text>
-            <Text fontSize="lg" color={MUTED} maxW="2xl" mx="auto" mt={6} lineHeight="1.7">
+      <section id="about" className="py-24 relative z-[9]">
+        <div className="max-w-[1200px] mx-auto px-6">
+          <div className="text-center mb-16">
+            <p className="text-[11px] font-bold uppercase tracking-[2px] text-[#3d5500] mb-4">Our Mission</p>
+            <h2 className="text-4xl md:text-[64px] font-bold uppercase leading-[0.95] tracking-tight">
+              The fine print<br /><span className="bg-[#d6ff34] text-black px-2">shouldn't be</span><br />a trap.
+            </h2>
+            <p className="text-lg text-[color:var(--muted)] max-w-2xl mx-auto mt-6 leading-relaxed">
               Kredpane was built because no one should have to spend hours reading legal jargon to understand what rights they're signing away. We use AI to do that work for you, instantly.
-            </Text>
-          </Box>
+            </p>
+          </div>
 
-          <Box display="grid" gridTemplateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={6} mb={20}>
-            <MissionCard title="Consumer First" text="Every feature we build is designed to give you power over agreements that were never written with your interests in mind." dot={YELLOW} />
-            <MissionCard title="Instant Clarity" text="We turn dense legal text into plain English in seconds. No law degree required. Just paste and go." dot={MINT} />
-            <MissionCard title="Privacy by Design" text="We don't sell your data. The irony of a ToS analyzer selling your data is not lost on us." dot={CYAN} />
-            <MissionCard title="Open to All" text="Anyone who uses the internet should have access to this tool. No subscriptions, no paywalls to get started." dot={LAVENDER} />
-          </Box>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-20">
+            <MissionCard title="Consumer First" text="Every feature we build is designed to give you power over agreements that were never written with your interests in mind." dot="#d6ff34" />
+            <MissionCard title="Instant Clarity" text="We turn dense legal text into plain English in seconds. No law degree required. Just paste and go." dot="#5dffc0" />
+            <MissionCard title="Privacy by Design" text="We don't sell your data. The irony of a ToS analyzer selling your data is not lost on us." dot="#71f6ff" />
+            <MissionCard title="Open to All" text="Anyone who uses the internet should have access to this tool. No subscriptions, no paywalls to get started." dot="#c1adff" />
+          </div>
 
-          <Box display="grid" gridTemplateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={16} alignItems="center">
-            <Box>
-              <Text fontSize="11px" fontWeight="700" textTransform="uppercase" letterSpacing="2px" color={ACCENT} mb={4}>Under the Hood</Text>
-              <Text as="h3" fontSize={{ base: "3xl", md: "48px" }} fontWeight="700" textTransform="uppercase" lineHeight="1" mb={6}>
-                Powered by State-of-the-Art AI
-              </Text>
-              <Text color={MUTED} lineHeight="1.7" mb={4}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[2px] text-[#3d5500] mb-4">Under the Hood</p>
+              <h3 className="text-3xl md:text-[48px] font-bold uppercase leading-none mb-6">Powered by State-of-the-Art AI</h3>
+              <p className="text-[color:var(--muted)] leading-relaxed mb-4">
                 Kredpane uses Llama 3.3 70B, a large language model with deep legal and linguistic comprehension, to read every clause, rate its severity, and explain what it means in plain language.
-              </Text>
-              <Text color={MUTED} lineHeight="1.7">
+              </p>
+              <p className="text-[color:var(--muted)] leading-relaxed">
                 The AI assigns each clause a severity score from 1 to 10 and categorises it into one of twelve risk categories, giving you a complete picture of any ToS document in under 30 seconds.
-              </Text>
-            </Box>
-            <Flex direction="column" gap={4}>
+              </p>
+            </div>
+            <div className="flex flex-col gap-4">
               <SpecRow label="Model" value="Llama 3.3 70B Instruct" />
               <SpecRow label="Categories detected" value="12 risk types" />
               <SpecRow label="Severity scale" value="1–10 per clause" />
               <SpecRow label="Average analysis time" value="< 30 seconds" />
-            </Flex>
-          </Box>
-        </Box>
-      </Box>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      <Box id="faq" bg={SURFACE_1} pt="96px" pb="96px" position="relative" zIndex={8} borderTop="1px solid var(--line)">
-        <Box maxW="3xl" mx="auto" px={6}>
-          <Box textAlign="center" mb={16}>
-            <Text fontSize="11px" fontWeight="700" textTransform="uppercase" letterSpacing="2px" color={ACCENT} mb={4}>Got Questions?</Text>
-            <Text as="h2" fontSize={{ base: "4xl", md: "64px" }} fontWeight="700" textTransform="uppercase" lineHeight="0.95" letterSpacing="tight">
-              Frequently<br /><Text as="span" bg={YELLOW} color="#000" px={2}>asked.</Text>
-            </Text>
-            <Text fontSize="lg" color={MUTED} maxW="xl" mx="auto" mt={6} lineHeight="1.7">
+      <section id="faq" className="bg-white py-24 relative z-[8] border-t border-[color:var(--line)]">
+        <div className="max-w-3xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <p className="text-[11px] font-bold uppercase tracking-[2px] text-[#3d5500] mb-4">Got Questions?</p>
+            <h2 className="text-4xl md:text-[64px] font-bold uppercase leading-[0.95] tracking-tight">
+              Frequently<br /><span className="bg-[#d6ff34] text-black px-2">asked.</span>
+            </h2>
+            <p className="text-lg text-[color:var(--muted)] max-w-xl mx-auto mt-6 leading-relaxed">
               Everything you need to know about Kredpane, how it works, and what it can do for you.
-            </Text>
-          </Box>
+            </p>
+          </div>
 
-          <Flex direction="column" gap={4}>
+          <div className="flex flex-col gap-4">
             {FAQ.map((item, i) => (
-              <Box key={item.q} border="1px solid var(--line)" borderRadius="20px" overflow="hidden" bg={SURFACE_2}>
-                <Button
+              <div key={item.q} className="border border-[color:var(--line)] rounded-[20px] overflow-hidden bg-[color:var(--s2)]">
+                <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  w="100%" display="flex" alignItems="center" justifyContent="space-between"
-                  px={8} py={6} h="auto" textAlign="left" bg="transparent" borderRadius={0}
-                  _hover={{ bg: "var(--s3)" }}
+                  className="w-full flex items-center justify-between px-8 py-6 text-left hover:bg-[color:var(--s3)] transition-colors"
                 >
-                  <Text fontSize="15px" fontWeight="700" textTransform="uppercase" letterSpacing="wide" color="#111111">{item.q}</Text>
-                  <Text color={MUTED} fontSize="sm" ml={4}>{openFaq === i ? "−" : "+"}</Text>
-                </Button>
+                  <span className="text-[15px] font-bold uppercase tracking-wide text-[color:var(--fg)]">{item.q}</span>
+                  <span className="text-[color:var(--muted)] text-sm ml-4">{openFaq === i ? "−" : "+"}</span>
+                </button>
                 {openFaq === i ? (
-                  <Box px={8} pb={6}>
-                    <Text color={MUTED} fontSize="sm" lineHeight="1.7">{item.a}</Text>
-                  </Box>
+                  <div className="px-8 pb-6">
+                    <p className="text-sm leading-relaxed text-[color:var(--muted)]">{item.a}</p>
+                  </div>
                 ) : null}
-              </Box>
+              </div>
             ))}
-          </Flex>
-        </Box>
-      </Box>
+          </div>
+        </div>
+      </section>
 
-      <Box as="footer" bg="var(--page)" borderTop="1px solid var(--line)" py={16} px={6}>
-        <Box maxW="1700px" mx="auto">
-          <Flex direction={{ base: "column", md: "row" }} justify="space-between" gap={10} mb={12}>
-            <Box maxW="xs">
-              <HStack gap={3} mb={4}>
-                <Box w="40px" h="40px" borderRadius="12px" bg={YELLOW} display="grid" placeItems="center">
+      <footer className="bg-[color:var(--page)] border-t border-[color:var(--line)] py-16 px-6">
+        <div className="max-w-[1700px] mx-auto">
+          <div className="flex flex-col md:flex-row justify-between gap-10 mb-12">
+            <div className="max-w-xs">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="w-10 h-10 rounded-[12px] bg-[#d6ff34] grid place-items-center">
                   <LogoIcon className="w-6 h-6 text-black" />
-                </Box>
-                <Text fontSize="xl" fontWeight="700" letterSpacing="0.2em" textTransform="uppercase">Kredpane</Text>
-              </HStack>
-              <Text color={MUTED} fontSize="sm" lineHeight="1.7">
+                </span>
+                <span className="text-xl font-bold uppercase tracking-[0.2em]">Kredpane</span>
+              </div>
+              <p className="text-[color:var(--muted)] text-sm leading-relaxed">
                 Consumer contract analysis. Know what you are agreeing to before you sign.
-              </Text>
-            </Box>
-            <Box display="grid" gridTemplateColumns="1fr 1fr" columnGap={16} rowGap={4}>
-              <Flex direction="column" gap={3}>
-                <Text fontSize="11px" fontWeight="700" textTransform="uppercase" letterSpacing="1.4px" color={ACCENT}>Product</Text>
-                <NavLink href="#top" small>Scan a contract</NavLink>
-                <NavLink href="#about" small>About</NavLink>
-                <NavLink href="#faq" small>FAQ</NavLink>
-              </Flex>
-              <Flex direction="column" gap={3}>
-                <Text fontSize="11px" fontWeight="700" textTransform="uppercase" letterSpacing="1.4px" color={ACCENT}>Caught</Text>
-                <Text fontSize="12px" fontWeight="700" textTransform="uppercase" letterSpacing="wide" color={MUTED}>Arbitration</Text>
-                <Text fontSize="12px" fontWeight="700" textTransform="uppercase" letterSpacing="wide" color={MUTED}>Auto-renewal</Text>
-                <Text fontSize="12px" fontWeight="700" textTransform="uppercase" letterSpacing="wide" color={MUTED}>Indemnity</Text>
-              </Flex>
-            </Box>
-          </Flex>
-          <Flex borderTop="1px solid var(--line)" pt={8} justify="space-between" gap={4} wrap="wrap" align="center">
-            <Text color={MUTED} fontSize="12px" fontWeight="700" textTransform="uppercase" letterSpacing="0.1em">© 2026 Kredpane. All rights reserved.</Text>
-          </Flex>
-        </Box>
-      </Box>
-    </Box>
-  );
-}
-
-function NavLink({ href, children, small }: { href: string; children: React.ReactNode; small?: boolean }) {
-  return (
-    <a
-      href={href}
-      className="kp-link"
-      style={{ fontSize: small ? "12px" : "12px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: MUTED }}
-    >
-      {children}
-    </a>
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-x-16 gap-y-4">
+              <div className="flex flex-col gap-3">
+                <p className="text-[11px] font-bold uppercase tracking-[1.4px] text-[#3d5500]">Product</p>
+                <a href="#top" className="kp-link text-[12px] font-bold uppercase tracking-wide text-[color:var(--muted)]">Scan a contract</a>
+                <a href="#about" className="kp-link text-[12px] font-bold uppercase tracking-wide text-[color:var(--muted)]">About</a>
+                <a href="#faq" className="kp-link text-[12px] font-bold uppercase tracking-wide text-[color:var(--muted)]">FAQ</a>
+              </div>
+              <div className="flex flex-col gap-3">
+                <p className="text-[11px] font-bold uppercase tracking-[1.4px] text-[#3d5500]">Caught</p>
+                <span className="text-[12px] font-bold uppercase tracking-wide text-[color:var(--muted)]">Arbitration</span>
+                <span className="text-[12px] font-bold uppercase tracking-wide text-[color:var(--muted)]">Auto-renewal</span>
+                <span className="text-[12px] font-bold uppercase tracking-wide text-[color:var(--muted)]">Indemnity</span>
+              </div>
+            </div>
+          </div>
+          <div className="border-t border-[color:var(--line)] pt-8">
+            <p className="text-[color:var(--muted)] text-[12px] font-bold uppercase tracking-widest">© 2026 Kredpane. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
+    </main>
   );
 }
 
 function StatCard({ label, value, color, text }: { label: string; value: string; color: string; text: string }) {
   return (
-    <Box flex="1" bg={SURFACE_2} borderRadius="20px" p={8} borderTop={`4px solid ${color}`} boxShadow="0 20px 25px -5px rgba(0,0,0,0.06)">
-      <Text fontSize="11px" fontWeight="700" textTransform="uppercase" letterSpacing="1.2px" color={MUTED} mb={4}>{label}</Text>
-      <Text fontSize="5xl" fontWeight="700" color={color} mb={2} lineHeight="1">{value}</Text>
-      <Text color="#111111" fontSize="lg" lineHeight="1.6">{text}</Text>
-    </Box>
+    <div className="flex-1 bg-[color:var(--s2)] rounded-[20px] p-8 shadow-[0_20px_25px_-5px_rgba(0,0,0,0.06)]" style={{ borderTop: `4px solid ${color}` }}>
+      <p className="text-[11px] font-bold uppercase tracking-[1.2px] text-[color:var(--muted)] mb-4">{label}</p>
+      <p className="text-5xl font-bold mb-2 leading-none" style={{ color }}>{value}</p>
+      <p className="text-lg leading-relaxed">{text}</p>
+    </div>
   );
 }
 
-function StepCard({ step, title, text, mt }: { step: string; title: string; text: string; mt?: object }) {
+function StepCard({ step, title, text, className = "" }: { step: string; title: string; text: string; className?: string }) {
   return (
-    <Box flex="1" bg={CREAM} borderRadius="30px" p={10} mt={mt} _hover={{ transform: "translateY(-8px)" }} transition="transform 0.3s">
-      <Text fontSize="xs" fontWeight="700" color="var(--cream-muted)" textTransform="uppercase" letterSpacing="0.1em" mb={4}>{step}</Text>
-      <Text as="h3" fontSize={{ base: "32px", md: "40px" }} fontWeight="700" color="var(--cream-ink)" textTransform="uppercase" lineHeight="1.1" mb={4}>{title}</Text>
-      <Text color="var(--cream-soft)" fontSize="lg" lineHeight="1.6">{text}</Text>
-    </Box>
+    <div className={`flex-1 bg-[#eceee7] rounded-[30px] p-10 hover:-translate-y-2 transition-transform ${className}`}>
+      <p className="text-xs font-bold uppercase tracking-[0.1em] text-black/45 mb-4">{step}</p>
+      <h3 className="text-[32px] md:text-[40px] font-bold uppercase leading-[1.1] text-black mb-4">{title}</h3>
+      <p className="text-black/80 text-lg leading-relaxed">{text}</p>
+    </div>
   );
 }
 
 function CatchCard({ title, text, bg, ink }: { title: string; text: string; bg: string; ink: string }) {
   return (
-    <Box bg={bg} borderRadius="30px" p={10} position="relative" overflow="hidden">
-      <Text fontSize="xs" fontWeight="700" color={`${ink}99`} textTransform="uppercase" letterSpacing="0.1em" mb={4}>Category</Text>
-      <Text as="h3" fontSize={{ base: "32px", md: "40px" }} fontWeight="700" color={ink} textTransform="uppercase" lineHeight="1.1" mb={4}>{title}</Text>
-      <Text color={`${ink}cc`} lineHeight="1.6">{text}</Text>
-    </Box>
+    <div className="rounded-[30px] p-10 relative overflow-hidden" style={{ background: bg }}>
+      <p className="text-xs font-bold uppercase tracking-[0.1em] mb-4" style={{ color: `${ink}99` }}>Category</p>
+      <h3 className="text-[32px] md:text-[40px] font-bold uppercase leading-[1.1] mb-4" style={{ color: ink }}>{title}</h3>
+      <p className="leading-relaxed" style={{ color: `${ink}cc` }}>{text}</p>
+    </div>
   );
 }
 
 function MissionCard({ title, text, dot }: { title: string; text: string; dot: string }) {
   return (
-    <Box bg={SURFACE_1} borderRadius="30px" p={10} border="1px solid var(--line)">
-      <Box w="48px" h="48px" borderRadius="full" bg={dot} mb={6} />
-      <Text as="h3" fontSize="2xl" fontWeight="700" textTransform="uppercase" mb={3}>{title}</Text>
-      <Text color={MUTED} lineHeight="1.7">{text}</Text>
-    </Box>
+    <div className="bg-white rounded-[30px] p-10 border border-[color:var(--line)]">
+      <span className="block w-12 h-12 rounded-full mb-6" style={{ background: dot }} />
+      <h3 className="text-2xl font-bold uppercase mb-3">{title}</h3>
+      <p className="text-[color:var(--muted)] leading-relaxed">{text}</p>
+    </div>
   );
 }
 
 function SpecRow({ label, value }: { label: string; value: string }) {
   return (
-    <Flex justify="space-between" align="center" px={6} py={4} bg={SURFACE_2} borderRadius="16px" border="1px solid var(--line)">
-      <Text fontSize="12px" fontWeight="700" textTransform="uppercase" letterSpacing="wider" color={MUTED}>{label}</Text>
-      <Text fontSize="13px" fontWeight="700" textTransform="uppercase" letterSpacing="wide" color={ACCENT}>{value}</Text>
-    </Flex>
+    <div className="flex items-center justify-between px-6 py-4 bg-[color:var(--s2)] rounded-[16px] border border-[color:var(--line)]">
+      <span className="text-[12px] font-bold uppercase tracking-wider text-[color:var(--muted)]">{label}</span>
+      <span className="text-[13px] font-bold uppercase tracking-wide text-[#3d5500]">{value}</span>
+    </div>
   );
 }
