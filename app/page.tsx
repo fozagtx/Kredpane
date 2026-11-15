@@ -8,19 +8,19 @@ import { NotchNavbar } from "../components/ui/notch-navbar";
 import LogoIcon from "../assets/logo/logo-icon";
 
 const YELLOW = "#d6ff34";
-const PAGE = "#f3f3ef";
-const SURFACE_1 = "#ffffff";
-const SURFACE_2 = "#f6f6f1";
-const SURFACE_3 = "#eaeae3";
-const MUTED = "rgba(0,0,0,0.62)";
-const FOREGROUND = "#111111";
+const PAGE = "var(--page)";
+const SURFACE_1 = "var(--s1)";
+const SURFACE_2 = "var(--s2)";
+const SURFACE_3 = "var(--s3)";
+const MUTED = "var(--muted)";
+const FOREGROUND = "var(--fg)";
 const ACCENT = "#3d5500";
 const MINT = "#5dffc0";
 const CYAN = "#71f6ff";
 const BLUE = "#7da2ff";
 const LAVENDER = "#c1adff";
 const DANGER = "#ff4444";
-const CREAM = "#ECEEE7";
+const CREAM = "var(--cream)";
 
 const SAMPLE = `GOLDEN FITNESS — MEMBERSHIP AGREEMENT
 
@@ -168,7 +168,7 @@ export default function Page() {
         }
       />
 
-      <Box id="top" className="grid-pattern" bg={PAGE} borderBottom="1px solid rgba(0,0,0,0.08)" borderBottomRadius="120px" pt="128px" pb="170px" position="relative" zIndex={40} boxShadow="0 20px 50px -10px rgba(0,0,0,0.12)">
+      <Box id="top" className="grid-pattern" bg={PAGE} borderBottom="1px solid var(--line)" borderBottomRadius="64px" pt="128px" pb="110px" position="relative" zIndex={40} boxShadow="0 20px 50px -10px rgba(0,0,0,0.12)">
         <Box maxW="1700px" mx="auto" px={6}>
           <Box textAlign="center" maxW="5xl" mx="auto" mb={14}>
             <Text as="h1" fontSize={{ base: "48px", md: "88px" }} fontWeight="700" lineHeight="0.9" letterSpacing="tight" textTransform="uppercase">
@@ -213,7 +213,7 @@ export default function Page() {
               >
                 From Email
               </Button>
-              <Text fontSize="11px" color="rgba(0,0,0,0.35)" ml="auto" display={{ base: "none", md: "block" }}>
+              <Text fontSize="11px" color="var(--muted)" ml="auto" display={{ base: "none", md: "block" }}>
                 {docName || "PDF, PNG, JPEG or WebP"}
               </Text>
               <input
@@ -235,7 +235,7 @@ export default function Page() {
                   value={company}
                   onChange={(e) => setCompany(e.target.value)}
                   placeholder="COMPANY NAME (OPTIONAL)"
-                  w="100%" bg={SURFACE_2} border="1px solid rgba(0,0,0,0.08)" borderRadius="12px" px={6} py={4}
+                  w="100%" bg={SURFACE_2} border="1px solid var(--line)" borderRadius="12px" px={6} py={4}
                   h="auto" fontSize="sm" fontWeight="700" letterSpacing="wider" textTransform="uppercase" color={FOREGROUND}
                   _placeholder={{ color: MUTED }}
                   _focusVisible={{ outline: "none", borderColor: "rgba(61,85,0,0.6)" }}
@@ -247,7 +247,7 @@ export default function Page() {
                   onChange={(e) => setSource(e.target.value)}
                   spellCheck={false}
                   placeholder="Paste the Terms of Service, Privacy Policy, or contract here..."
-                  w="100%" h="100%" bg={SURFACE_2} border="1px solid rgba(0,0,0,0.08)" borderRadius="20px" p={6}
+                  w="100%" h="100%" bg={SURFACE_2} border="1px solid var(--line)" borderRadius="20px" p={6}
                   fontSize="md" color={FOREGROUND} resize="none"
                   _placeholder={{ color: MUTED }}
                   _focusVisible={{ outline: "none", borderColor: "rgba(61,85,0,0.6)" }}
@@ -265,7 +265,7 @@ export default function Page() {
                 <NativeSelect.Field
                   value={target}
                   onChange={(e) => setTarget(e.target.value)}
-                  bg={SURFACE_2} color={FOREGROUND} border="1px solid rgba(0,0,0,0.10)" borderRadius="full"
+                  bg={SURFACE_2} color={FOREGROUND} border="1px solid var(--line-strong)" borderRadius="full"
                   px={4} py={3} h="auto" fontSize="11px" fontWeight="700" letterSpacing="1px" textTransform="uppercase"
                 >
                   {TARGETS.map((t) => (
@@ -305,7 +305,7 @@ export default function Page() {
       </Box>
 
       {review ? (
-        <Box ref={resultsRef} bg={SURFACE_1} borderBottomRadius="120px" pt="120px" pb="140px" mt="-120px" position="relative" zIndex={30} boxShadow="0 20px 50px -10px rgba(0,0,0,0.12)">
+        <Box ref={resultsRef} bg={SURFACE_1} borderBottomRadius="64px" pt="96px" pb="96px" position="relative" zIndex={30} boxShadow="0 20px 50px -10px rgba(0,0,0,0.12)">
           <Box maxW="1700px" mx="auto" px={6}>
             <Flex align="baseline" gap={4} mb={8} wrap="wrap">
               <HStack gap={3} align="baseline">
@@ -321,7 +321,7 @@ export default function Page() {
                 <Text fontSize="11px" fontWeight="700" letterSpacing="1.4px" textTransform="uppercase" color={MUTED}>
                   Risk score after rewrite
                 </Text>
-                <Text fontSize="sm" color="rgba(0,0,0,0.65)" mt={1}>
+                <Text fontSize="sm" color="var(--muted)" mt={1}>
                   {review.fixed} of {review.before.findings.length} unfair terms removed · {factsKept} of {review.facts} numbers kept
                 </Text>
               </Box>
@@ -329,7 +329,7 @@ export default function Page() {
                 ml="auto"
                 onClick={() => void checkWithPanel()}
                 disabled={panel.status === "pending"}
-                variant="outline" borderColor="rgba(0,0,0,0.15)" color={FOREGROUND} borderRadius="full"
+                variant="outline" borderColor="var(--line-strong)" color={FOREGROUND} borderRadius="full"
                 px={5} py={2.5} h="auto" fontSize="11px" fontWeight="700" letterSpacing="1px" textTransform="uppercase"
                 _hover={{ bg: SURFACE_2 }}
               >
@@ -351,10 +351,10 @@ export default function Page() {
 
             <Flex gap={4} direction={{ base: "column", lg: "row" }} align="stretch">
               <ResultPanel title={`The contract · risk ${review.before.riskScore}`}>
-                <Text fontSize="13px" lineHeight="1.7" whiteSpace="pre-wrap" color="rgba(237,237,237,0.85)">{review.passes[0].text}</Text>
+                <Text fontSize="13px" lineHeight="1.7" whiteSpace="pre-wrap" color="var(--fg)">{review.passes[0].text}</Text>
               </ResultPanel>
               <ResultPanel title={`Rewritten · risk ${finalPass?.analysis.riskScore ?? "—"}`} accent={finalPass && finalPass.analysis.riskScore <= review.target ? MINT : CYAN}>
-                <Text fontSize="13px" lineHeight="1.7" whiteSpace="pre-wrap" color="rgba(237,237,237,0.9)">{finalPass?.text}</Text>
+                <Text fontSize="13px" lineHeight="1.7" whiteSpace="pre-wrap" color="var(--fg)">{finalPass?.text}</Text>
               </ResultPanel>
               <ResultPanel title="What we caught">
                 <Flex direction="column" gap={2.5}>
@@ -380,7 +380,7 @@ export default function Page() {
                       </Box>
                     );
                   })}
-                  <Text fontSize="10px" color="rgba(0,0,0,0.35)">Not legal advice. These are the terms worth questioning before you sign.</Text>
+                  <Text fontSize="10px" color="var(--muted)">Not legal advice. These are the terms worth questioning before you sign.</Text>
                 </Flex>
               </ResultPanel>
             </Flex>
@@ -388,7 +388,7 @@ export default function Page() {
         </Box>
       ) : null}
 
-      <Box bg={SURFACE_1} borderBottomRadius="120px" pt="200px" pb="170px" mt="-120px" position="relative" zIndex={30} boxShadow="0 20px 50px -10px rgba(0,0,0,0.12)" borderBottom="1px solid rgba(0,0,0,0.5)">
+      <Box bg={SURFACE_1} borderBottomRadius="64px" pt="96px" pb="96px" position="relative" zIndex={30} boxShadow="0 20px 50px -10px rgba(0,0,0,0.12)" borderBottom="1px solid rgba(0,0,0,0.5)">
         <Box maxW="1700px" mx="auto" px={6}>
           <Flex gap={6} direction={{ base: "column", md: "row" }}>
             <StatCard label="The Problem" value="7.2B" color={ACCENT} text="Users affected by hidden data-selling clauses daily." />
@@ -398,7 +398,7 @@ export default function Page() {
         </Box>
       </Box>
 
-      <Box bg={PAGE} borderBottomRadius="120px" pt="200px" pb="170px" mt="-120px" position="relative" zIndex={20} boxShadow="0 20px 50px -10px rgba(0,0,0,0.12)" borderBottom="1px solid rgba(0,0,0,0.08)">
+      <Box bg={PAGE} borderBottomRadius="64px" pt="96px" pb="96px" position="relative" zIndex={20} boxShadow="0 20px 50px -10px rgba(0,0,0,0.12)" borderBottom="1px solid var(--line)">
         <Box maxW="1700px" mx="auto" px={6}>
           <Text as="h2" fontSize={{ base: "4xl", md: "56px" }} fontWeight="700" textTransform="uppercase" letterSpacing="tight" textAlign="center" mb={16}>
             How it works
@@ -411,7 +411,7 @@ export default function Page() {
         </Box>
       </Box>
 
-      <Box bg={SURFACE_1} borderBottomRadius="120px" pt="200px" pb="170px" mt="-120px" position="relative" zIndex={10} boxShadow="0 20px 50px -10px rgba(0,0,0,0.12)" borderBottom="1px solid rgba(0,0,0,0.5)">
+      <Box bg={SURFACE_1} borderBottomRadius="64px" pt="96px" pb="96px" position="relative" zIndex={10} boxShadow="0 20px 50px -10px rgba(0,0,0,0.12)" borderBottom="1px solid rgba(0,0,0,0.5)">
         <Box maxW="1700px" mx="auto" px={6}>
           <Text as="h2" fontSize={{ base: "4xl", md: "56px" }} fontWeight="700" textTransform="uppercase" letterSpacing="tight" textAlign="center" mb={16}>
             What we catch
@@ -425,7 +425,7 @@ export default function Page() {
         </Box>
       </Box>
 
-      <Box id="about" bg={PAGE} borderBottomRadius="120px" pt="200px" pb="170px" mt="-120px" position="relative" zIndex={9} boxShadow="0 20px 50px -10px rgba(0,0,0,0.12)" borderBottom="1px solid rgba(0,0,0,0.08)">
+      <Box id="about" bg={PAGE} borderBottomRadius="64px" pt="96px" pb="96px" position="relative" zIndex={9} boxShadow="0 20px 50px -10px rgba(0,0,0,0.12)" borderBottom="1px solid var(--line)">
         <Box maxW="1200px" mx="auto" px={6}>
           <Box textAlign="center" mb={16}>
             <Text fontSize="11px" fontWeight="700" textTransform="uppercase" letterSpacing="2px" color={ACCENT} mb={4}>Our Mission</Text>
@@ -469,7 +469,7 @@ export default function Page() {
         </Box>
       </Box>
 
-      <Box id="faq" bg={SURFACE_1} pt="200px" pb="140px" mt="-120px" position="relative" zIndex={8}>
+      <Box id="faq" bg={SURFACE_1} pt="96px" pb="96px" position="relative" zIndex={8}>
         <Box maxW="3xl" mx="auto" px={6}>
           <Box textAlign="center" mb={16}>
             <Text fontSize="11px" fontWeight="700" textTransform="uppercase" letterSpacing="2px" color={ACCENT} mb={4}>Got Questions?</Text>
@@ -483,14 +483,14 @@ export default function Page() {
 
           <Flex direction="column" gap={4}>
             {FAQ.map((item, i) => (
-              <Box key={item.q} border="1px solid rgba(0,0,0,0.10)" borderRadius="20px" overflow="hidden" bg={SURFACE_2}>
+              <Box key={item.q} border="1px solid var(--line-strong)" borderRadius="20px" overflow="hidden" bg={SURFACE_2}>
                 <Button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
                   w="100%" display="flex" alignItems="center" justifyContent="space-between"
                   px={8} py={6} h="auto" textAlign="left" bg="transparent" borderRadius={0}
-                  _hover={{ bg: "rgba(0,0,0,0.02)" }}
+                  _hover={{ bg: "var(--line)" }}
                 >
-                  <Text fontSize="15px" fontWeight="700" textTransform="uppercase" letterSpacing="wide" color="#111">{item.q}</Text>
+                  <Text fontSize="15px" fontWeight="700" textTransform="uppercase" letterSpacing="wide" color="var(--fg)">{item.q}</Text>
                   <Text color={MUTED} fontSize="sm" ml={4}>{openFaq === i ? "−" : "+"}</Text>
                 </Button>
                 {openFaq === i ? (
@@ -504,7 +504,7 @@ export default function Page() {
         </Box>
       </Box>
 
-      <Box as="footer" bg={PAGE} borderTop="1px solid rgba(0,0,0,0.08)" py={16} px={6}>
+      <Box as="footer" bg={PAGE} borderTop="1px solid var(--line)" py={16} px={6}>
         <Box maxW="1700px" mx="auto">
           <Flex direction={{ base: "column", md: "row" }} justify="space-between" gap={10} mb={12}>
             <Box maxW="xs">
@@ -533,7 +533,7 @@ export default function Page() {
               </Flex>
             </Box>
           </Flex>
-          <Flex borderTop="1px solid rgba(0,0,0,0.08)" pt={8} justify="space-between" gap={4} wrap="wrap" align="center">
+          <Flex borderTop="1px solid var(--line)" pt={8} justify="space-between" gap={4} wrap="wrap" align="center">
             <Text color={MUTED} fontSize="12px" fontWeight="700" textTransform="uppercase" letterSpacing="0.1em">© 2026 Kredpane. All rights reserved.</Text>
           </Flex>
         </Box>
@@ -562,8 +562,8 @@ function NavLink({ href, children, small }: { href: string; children: React.Reac
 
 function ResultPanel({ title, accent = YELLOW, children }: { title: string; accent?: string; children: React.ReactNode }) {
   return (
-    <Box flex="1" minW="0" bg={SURFACE_2} borderRadius="24px" overflow="hidden" border="1px solid rgba(0,0,0,0.08)">
-      <Box px={4} py={3} borderBottom="1px solid rgba(0,0,0,0.08)">
+    <Box flex="1" minW="0" bg={SURFACE_2} borderRadius="24px" overflow="hidden" border="1px solid var(--line)">
+      <Box px={4} py={3} borderBottom="1px solid var(--line)">
         <Text fontSize="10px" fontWeight="700" letterSpacing="1.2px" textTransform="uppercase" color={accent}>{title}</Text>
       </Box>
       <Box p={4} maxH="420px" overflowY="auto">{children}</Box>
@@ -584,9 +584,9 @@ function StatCard({ label, value, color, text }: { label: string; value: string;
 function StepCard({ step, title, text, mt }: { step: string; title: string; text: string; mt?: object }) {
   return (
     <Box flex="1" bg={CREAM} borderRadius="30px" p={10} mt={mt} _hover={{ transform: "translateY(-8px)" }} transition="transform 0.3s">
-      <Text fontSize="xs" fontWeight="700" color="rgba(0,0,0,0.4)" textTransform="uppercase" letterSpacing="0.1em" mb={4}>{step}</Text>
-      <Text as="h3" fontSize={{ base: "32px", md: "40px" }} fontWeight="700" color="#000" textTransform="uppercase" lineHeight="1.1" mb={4}>{title}</Text>
-      <Text color="rgba(0,0,0,0.8)" fontSize="lg" lineHeight="1.6">{text}</Text>
+      <Text fontSize="xs" fontWeight="700" color="var(--cream-muted)" textTransform="uppercase" letterSpacing="0.1em" mb={4}>{step}</Text>
+      <Text as="h3" fontSize={{ base: "32px", md: "40px" }} fontWeight="700" color="var(--cream-ink)" textTransform="uppercase" lineHeight="1.1" mb={4}>{title}</Text>
+      <Text color="var(--cream-soft)" fontSize="lg" lineHeight="1.6">{text}</Text>
     </Box>
   );
 }
@@ -603,7 +603,7 @@ function CatchCard({ title, text, bg, ink }: { title: string; text: string; bg: 
 
 function MissionCard({ title, text, dot }: { title: string; text: string; dot: string }) {
   return (
-    <Box bg={SURFACE_1} borderRadius="30px" p={10} border="1px solid rgba(0,0,0,0.08)">
+    <Box bg={SURFACE_1} borderRadius="30px" p={10} border="1px solid var(--line)">
       <Box w="48px" h="48px" borderRadius="full" bg={dot} mb={6} />
       <Text as="h3" fontSize="2xl" fontWeight="700" textTransform="uppercase" mb={3}>{title}</Text>
       <Text color={MUTED} lineHeight="1.7">{text}</Text>
@@ -613,7 +613,7 @@ function MissionCard({ title, text, dot }: { title: string; text: string; dot: s
 
 function SpecRow({ label, value }: { label: string; value: string }) {
   return (
-    <Flex justify="space-between" align="center" px={6} py={4} bg={SURFACE_1} borderRadius="16px" border="1px solid rgba(0,0,0,0.08)">
+    <Flex justify="space-between" align="center" px={6} py={4} bg={SURFACE_1} borderRadius="16px" border="1px solid var(--line)">
       <Text fontSize="12px" fontWeight="700" textTransform="uppercase" letterSpacing="wider" color={MUTED}>{label}</Text>
       <Text fontSize="13px" fontWeight="700" textTransform="uppercase" letterSpacing="wide" color={ACCENT}>{value}</Text>
     </Flex>
