@@ -75,7 +75,9 @@ button:disabled { background: #9aa8d6; cursor: progress; }
 
 .empty { color: var(--muted); border: 2px dashed var(--line); padding: 40px; text-align: center; }
 
-.grade-row { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+.grade-row { display: flex; align-items: center; gap: 32px; flex-wrap: wrap; }
+
+.metric { min-width: 118px; }
 
 .grade {
   font-size: 66px;
@@ -123,6 +125,25 @@ td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: top; f
 .allow.no { color: var(--red); }
 
 .err { color: var(--red); font-weight: 700; margin-top: 14px; }
+
+.battery { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink); }
+.battery li { display: grid; grid-template-columns: 88px 1fr; gap: 14px; padding: 11px 2px; border-bottom: 1px solid var(--line); align-items: start; }
+.battery strong { display: block; font-size: 14px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.battery .desc { color: var(--muted); font-size: 13px; }
+
+.sev { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; padding: 3px 8px; color: #fff; text-align: center; }
+.sev.critical { background: var(--red); }
+.sev.high { background: #f76707; }
+.sev.medium { background: var(--yellow); color: var(--ink); }
+
+.callout { margin-top: 22px; border-left: 5px solid var(--blue); background: #f4f6ff; padding: 14px 16px; font-weight: 600; }
+
+.legend { margin-top: 26px; border-top: 2px solid var(--ink); padding-top: 12px; }
+.legend div { display: flex; justify-content: space-between; font-size: 13px; padding: 5px 0; color: var(--muted); border-bottom: 1px solid var(--line); }
+.legend b { color: var(--ink); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+.badge { display: inline-block; margin-left: 10px; padding: 3px 8px; background: var(--yellow); color: var(--ink); font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; vertical-align: middle; }
+
 
 .older { margin-top: 28px; border-top: 2px solid var(--ink); padding-top: 14px; font-size: 13px; }
 .older button.link {

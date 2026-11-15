@@ -5,6 +5,7 @@ out/
 .env
 .env.*
 .DS_Store
+.shot-*.png
 *.log
 next-env.d.ts
 tsconfig.tsbuildinfo
