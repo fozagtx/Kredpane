@@ -11,9 +11,9 @@ const YELLOW = "#d6ff34";
 const SURFACE_1 = "#f7f7f3";
 const SURFACE_2 = "#f0f0ea";
 const SURFACE_3 = "#e7e7df";
-const MUTED = "rgba(0,0,0,0.55)";
+const MUTED = "rgba(0,0,0,0.62)";
 const FOREGROUND = "#111111";
-const ACCENT = "#5f7d00";
+const ACCENT = "#3d5500";
 const MINT = "#5dffc0";
 const CYAN = "#71f6ff";
 const BLUE = "#7da2ff";
@@ -174,7 +174,9 @@ export default function Page() {
               You hate reading<br />terms of service.
             </Text>
             <Text as="h2" fontSize={{ base: "36px", md: "88px" }} fontWeight="700" lineHeight="0.9" letterSpacing="tight" textTransform="uppercase" color={ACCENT} mt={2} mb={6}>
-              We know.
+              <Text as="span" bg={YELLOW} color="#000" px={3} style={{ boxDecorationBreak: "clone" }}>
+                We know.
+              </Text>
             </Text>
             <Text fontSize={{ base: "lg", md: "xl" }} color={MUTED} maxW="2xl" mx="auto" lineHeight="1.7">
               We read the fine print so you don't have to. Paste, upload, or drop your ToS and we'll tell you exactly how bad it is and help you fight back.
@@ -235,7 +237,7 @@ export default function Page() {
                   w="100%" bg={SURFACE_2} border="1px solid rgba(0,0,0,0.08)" borderRadius="12px" px={6} py={4}
                   h="auto" fontSize="sm" fontWeight="700" letterSpacing="wider" textTransform="uppercase" color={FOREGROUND}
                   _placeholder={{ color: MUTED }}
-                  _focusVisible={{ outline: "none", borderColor: "rgba(95,125,0,0.5)" }}
+                  _focusVisible={{ outline: "none", borderColor: "rgba(61,85,0,0.6)" }}
                 />
               </Box>
               <Box h="240px">
@@ -247,7 +249,7 @@ export default function Page() {
                   w="100%" h="100%" bg={SURFACE_2} border="1px solid rgba(0,0,0,0.08)" borderRadius="20px" p={6}
                   fontSize="md" color={FOREGROUND} resize="none"
                   _placeholder={{ color: MUTED }}
-                  _focusVisible={{ outline: "none", borderColor: "rgba(95,125,0,0.5)" }}
+                  _focusVisible={{ outline: "none", borderColor: "rgba(61,85,0,0.6)" }}
                 />
               </Box>
               {emailHint ? (
@@ -427,7 +429,7 @@ export default function Page() {
           <Box textAlign="center" mb={16}>
             <Text fontSize="11px" fontWeight="700" textTransform="uppercase" letterSpacing="2px" color={ACCENT} mb={4}>Our Mission</Text>
             <Text as="h2" fontSize={{ base: "4xl", md: "64px" }} fontWeight="700" textTransform="uppercase" lineHeight="0.95" letterSpacing="tight">
-              The fine print<br /><Text as="span" color={ACCENT}>shouldn't be</Text><br />a trap.
+              The fine print<br /><Text as="span" bg={YELLOW} color="#000" px={2}>shouldn't be</Text><br />a trap.
             </Text>
             <Text fontSize="lg" color={MUTED} maxW="2xl" mx="auto" mt={6} lineHeight="1.7">
               Kredpane was built because no one should have to spend hours reading legal jargon to understand what rights they're signing away. We use AI to do that work for you, instantly.
@@ -471,7 +473,7 @@ export default function Page() {
           <Box textAlign="center" mb={16}>
             <Text fontSize="11px" fontWeight="700" textTransform="uppercase" letterSpacing="2px" color={ACCENT} mb={4}>Got Questions?</Text>
             <Text as="h2" fontSize={{ base: "4xl", md: "64px" }} fontWeight="700" textTransform="uppercase" lineHeight="0.95" letterSpacing="tight">
-              Frequently<br /><Text as="span" color={ACCENT}>asked.</Text>
+              Frequently<br /><Text as="span" bg={YELLOW} color="#000" px={2}>asked.</Text>
             </Text>
             <Text fontSize="lg" color={MUTED} maxW="xl" mx="auto" mt={6} lineHeight="1.7">
               Everything you need to know about Kredpane, how it works, and what it can do for you.

@@ -34,24 +34,13 @@ export function NotchNavbar({
             </svg>
           </div>
 
-          <div className="relative w-full h-full flex items-end justify-between pb-2 px-4 md:px-8">
-            <div className="hidden md:block w-[110px]" />
-
-            <div className="flex justify-center shrink-0 mx-2 md:mx-4 mt-1">
+          <div className="relative w-full h-full flex items-center justify-center px-6">
+            <div className="flex items-center justify-center mt-1">
               {logo || (
-                <Link href="/" className="flex items-center justify-center relative group">
+                <Link href="/" className="flex items-center justify-center">
                   <span className="w-7 h-7 bg-[#d6ff34] rounded-[7px]" />
                 </Link>
               )}
-            </div>
-
-            <div className="flex items-center gap-2 mb-1">
-              <Link
-                href="#top"
-                className="px-3 py-1.5 text-sm font-medium text-white bg-black rounded-full hover:bg-black/85 transition-colors whitespace-nowrap"
-              >
-                Scan contract
-              </Link>
             </div>
           </div>
         </div>
