@@ -157,7 +157,15 @@ export default function Page() {
       <Box position="absolute" top="-120px" right="-120px" w="600px" h="600px" pointerEvents="none" zIndex={0}
         style={{ background: "radial-gradient(circle, rgba(214,255,52,0.55), transparent 70%)", filter: "blur(120px)" }} />
 
-      <NotchNavbar logo={<LogoIcon className="w-7 h-7 text-foreground rotate-180 hover:scale-105 transition-transform relative z-10" />} />
+      <NotchNavbar
+        logo={
+          <a href="#top" className="flex items-center justify-center group">
+            <span className="w-8 h-8 rounded-[8px] bg-[#d6ff34] flex items-center justify-center group-hover:scale-105 transition-transform">
+              <LogoIcon className="w-5 h-5 text-black" />
+            </span>
+          </a>
+        }
+      />
 
       <Box id="top" className="grid-pattern" bg="#fff" borderBottom="1px solid rgba(0,0,0,0.08)" borderBottomRadius="120px" pt="128px" pb="170px" position="relative" zIndex={40} boxShadow="0 20px 50px -10px rgba(0,0,0,0.12)">
         <Box maxW="1700px" mx="auto" px={6}>
@@ -498,8 +506,8 @@ export default function Page() {
           <Flex direction={{ base: "column", md: "row" }} justify="space-between" gap={10} mb={12}>
             <Box maxW="xs">
               <HStack gap={3} mb={4}>
-                <Box w="40px" h="40px" borderRadius="full" bg={YELLOW} display="grid" placeItems="center">
-                  <Text fontWeight="800" color="#000">K</Text>
+                <Box w="40px" h="40px" borderRadius="12px" bg={YELLOW} display="grid" placeItems="center">
+                  <LogoIcon className="w-6 h-6 text-black" />
                 </Box>
                 <Text fontSize="xl" fontWeight="700" letterSpacing="0.2em" textTransform="uppercase">Kredpane</Text>
               </HStack>

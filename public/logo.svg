@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 64" role="img" aria-label="Kredpane">
+  <rect x="0" y="8" width="48" height="48" rx="12" fill="#d6ff34" />
+  <g stroke="#0b0b0c" stroke-width="5" stroke-linecap="square" stroke-linejoin="miter">
+    <path d="M14 20v24" />
+    <path d="M14 32 31 20" />
+    <path d="M14 31 32 44" />
+  </g>
+  <text x="62" y="43" font-family="Space Grotesk, Helvetica, Arial, sans-serif" font-size="26" font-weight="700" letter-spacing="6" fill="#0b0b0c">KREDPANE</text>
+</svg>
