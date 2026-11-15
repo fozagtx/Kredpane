@@ -15,7 +15,7 @@ One real run on the free tier, same customer message both times:
 
 The baseline says *"I am sorry for the inconvenience. Please contact our team and they will look into it."* The rewrite names the duplicate charge as a billing error, states the refund path, escalates, gives a timeframe, and asks exactly one question.
 
-Note the second run is still routed `review` at a perfect score, because the panel's confidence was medium. Acceptance therefore requires **route `ship` and score ≥ 80**, not score alone — and the loop stops after two attempts, because a perfect score the panel still wants a human to see is not a reason to keep rewriting.
+The second run is still routed `review` at a perfect score, because the panel's confidence was medium. Acceptance therefore requires **route `ship` and score ≥ 80**, not score alone — and the loop stops after two attempts, because a perfect score the panel still wants a human to see is not a reason to keep rewriting.
 
 ## The loop
 
@@ -28,17 +28,11 @@ Reppo verdicts are queued and take 60–100 seconds, so the UI shows a live scor
 
 ## Sponsor stack
 
-**SERV Reasoning (OpenServ)** — every generation. The baseline reply and the constrained rewrite are the same model, different instructions, so the delta comes from the constraint and not from a model swap. Base URL `https://inference-api.openserv.ai/v1`.
+**SERV Reasoning (OpenServ)** — every generation. The baseline reply and the constrained rewrite are the same model with different instructions, so the delta comes from the constraint and not from a model swap.
 
 **Reppo Evaluation API** — the panel. `POST /api/v1/agents/evals` with `taskType: "response"`, polled until `COMPLETED`. The rubric dimensions it returns are what the rewrite is held to.
 
 Dolphin and Kite are not wired. Nothing in this repo calls them.
-
-## Underwriting surface (`/underwrite`)
-
-The repo also carries an earlier surface: submit an agent endpoint, run seven adversarial tests, get a grade, a premium, and a spend-permission decision. Six tests are checked mechanically and one is judged by SERV; a deterministic finding always outranks the model. Denials can be sent to the same Reppo panel as an independent review.
-
-It shares the app and the sponsor integrations. `npm run assess -- --compare` drives it from the CLI.
 
 ## Run
 
@@ -49,28 +43,20 @@ export REPPO_API_KEY=...
 npm run dev            # http://localhost:3000
 ```
 
-Useful routes: `/` (support loop), `/underwrite`, `/api/reply`, `/api/evaluate`, `/api/chat`, `/api/score`, `/api/second-opinion`.
+Routes: `/`, `/api/reply`, `/api/evaluate`, `/api/config`.
 
 ## Layout
 
 ```
 app/
-  page.tsx                    support loop
-  underwrite/page.tsx         underwriting surface
-  api/reply/route.ts          draft and constrained rewrite (SERV)
-  api/evaluate/route.ts       submit + poll a Reppo evaluation
-  api/chat/route.ts           agent-under-test runner (Agents SDK on SERV)
-  api/score/route.ts          submit + poll for the underwriting panel
-  api/second-opinion/route.ts Reppo review of a denial
+  page.tsx              support loop
+  api/reply/route.ts    draft and constrained rewrite (SERV)
+  api/evaluate/route.ts submit + poll a Reppo evaluation
+  api/config/route.ts   which keys are present
 lib/
-  support.ts                  baseline prompt, constraint builder, scoring rules
-  serv.ts                     SERV client, judge, narrative
-  reppo.ts                    Reppo client for both surfaces
-  tests.ts                    the seven adversarial tests
-  runner.ts                   underwriting orchestration
-  score.ts                    grade and premium
-  adapter.ts                  endpoint client and redaction
-  types.ts
+  support.ts            baseline prompt, constraint builder, scoring rules
+  serv.ts               SERV chat client
+  reppo.ts              Reppo client
 ```
 
 ## Limits

@@ -161,9 +161,6 @@ export default function SupportPage() {
           RATCH<span>ET</span>
         </div>
         <div className="tag">Every reply is scored, then rewritten against that score · SERV Reasoning + Reppo</div>
-        <a className="navlink" href="/underwrite">
-          underwriting →
-        </a>
       </header>
 
       <main className="sup-main">
