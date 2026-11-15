@@ -98,7 +98,7 @@ export default function DashboardPage() {
           </div>
           <div className="ml-auto flex items-center gap-2">
             <a
-              href="/"
+              href="/scan"
               className="px-5 py-2.5 rounded-full border border-[color:var(--line-strong)] text-[11px] font-bold uppercase tracking-[1px] hover:bg-white transition-colors"
             >
               ← Scan another

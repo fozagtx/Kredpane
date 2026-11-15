@@ -57,7 +57,7 @@ export function NotchNavbar({
                 </a>
 
                 <a
-                  href="#top"
+                  href="/scan"
                   className="ml-auto inline-flex items-center px-5 py-2 rounded-full bg-[#d6ff34] text-black text-[12px] font-bold uppercase tracking-[0.12em] shadow-[0_2px_10px_rgba(0,0,0,0.10)] hover:bg-[#c9f22b] active:scale-[0.98] transition-all whitespace-nowrap"
                 >
                   Scan now
