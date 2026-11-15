@@ -68,6 +68,15 @@ A second surface in the same app. A customer-support agent whose reply is scored
 
 Reppo evaluations are queued and take 30–90 seconds, so the UI shows a live scoring state rather than pretending the loop is instant. Needs `REPPO_API_KEY`; without it the agent still answers but nothing is scored and the loop never triggers.
 
+Measured on the free tier, one real run:
+
+| | score | route | completeness | settle time |
+| --- | --- | --- | --- | --- |
+| baseline reply | 69 | `review` | 14 | 64s |
+| rewrite under that verdict | 100 | `review` | 100 | 104s |
+
+The panel returned `review` even at 100 because its confidence was medium, so acceptance requires **route `ship` and score ≥ 80**, not score alone. That is why the loop is capped at two attempts: a perfect score the panel still wants a human to see is not a reason to keep rewriting.
+
 ## Run
 
 ```bash
