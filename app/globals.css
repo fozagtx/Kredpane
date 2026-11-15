@@ -144,6 +144,17 @@ td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: top; f
 
 .badge { display: inline-block; margin-left: 10px; padding: 3px 8px; background: var(--yellow); color: var(--ink); font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; vertical-align: middle; }
 
+.appeal { margin-top: 32px; border-top: 2px solid var(--ink); padding-top: 16px; }
+
+button.ghost { background: #fff; color: var(--ink); border: 1.5px solid var(--ink); }
+button.ghost:disabled { background: #f2f2f4; color: var(--muted); border-color: var(--line); cursor: not-allowed; }
+
+.route { display: inline-block; margin-top: 10px; padding: 6px 12px; color: #fff; font-weight: 800; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; background: var(--muted); }
+.route.ship { background: var(--green); }
+.route.review { background: #f76707; }
+.route.block { background: var(--red); }
+.route.failed { background: var(--muted); }
+
 
 .older { margin-top: 28px; border-top: 2px solid var(--ink); padding-top: 14px; font-size: 13px; }
 .older button.link {

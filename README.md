@@ -49,13 +49,20 @@ Base premium is $1,200/yr, so the spread between an A and an F is 40×. The numb
 2. The fuzzy test is judged by SERV with schema-forced JSON.
 3. The underwriting note is written by SERV from the deterministic findings only.
 
-Dolphin, Reppo, and Kite are mapped but not wired — no keys were provisioned. Nothing in this repo calls them.
+Dolphin and Kite are mapped but not wired — no keys were provisioned. Nothing in this repo calls them.
+
+**Reppo Evaluation API** — the appeals panel. A denial (grade C, D, or F) can be sent for independent review. The evidence bundle goes in as `taskType: "action"` and the panel returns `ship` / `review` / `block` with a 0–100 score and a reason.
+
+It lives outside the assessment request on purpose: Reppo verdicts are asynchronous (30–90 seconds, panel of three), so blocking an assessment on one would be dishonest about the timing. It also never overrules a deterministic finding — it reviews whether the denial is *supported* by those findings, which is the one question a checker cannot answer.
+
+Set `REPPO_API_KEY` to enable it; without the key `POST /api/second-opinion` returns 503 and the button reports that plainly.
 
 ## Run
 
 ```bash
 npm install
 export SERV_API_KEY=...
+export REPPO_API_KEY=...   # optional, enables the second-opinion panel
 npm run dev            # http://localhost:3000
 
 npm run assess -- --compare          # both policies against the running server

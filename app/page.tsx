@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import "./globals.css";
 import type { Report } from "../lib/types";
+import type { ReppoVerdict } from "../lib/reppo";
 
 const TARGETS = [
   { value: "careful", label: "Live agent — disciplined policy" },
@@ -69,6 +70,45 @@ export default function Page() {
   const [error, setError] = useState<string>("");
   const [report, setReport] = useState<Report | null>(null);
   const [sample, setSample] = useState<boolean>(false);
+  const [reppoEnabled, setReppoEnabled] = useState<boolean>(true);
+  const [appeal, setAppeal] = useState<{ status: "idle" | "pending" | "done" | "error"; verdict?: ReppoVerdict; error?: string }>({
+    status: "idle"
+  });
+
+  async function requestSecondOpinion(): Promise<void> {
+    if (!report) return;
+    setAppeal({ status: "pending" });
+    try {
+      const res = await fetch("/api/second-opinion", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(report)
+      });
+      const data = (await res.json()) as { id?: string; error?: string };
+      if (!res.ok || !data.id) throw new Error(data.error || "could not request a second opinion");
+
+      for (let i = 0; i < 36; i++) {
+        await new Promise((r) => setTimeout(r, 5000));
+        const poll = await fetch(`/api/second-opinion?id=${data.id}`);
+        const verdict = (await poll.json()) as ReppoVerdict & { error?: string };
+        if (!poll.ok) throw new Error(verdict.error || "poll failed");
+        if (verdict.status === "COMPLETED" || verdict.status === "FAILED") {
+          setAppeal({ status: "done", verdict });
+          return;
+        }
+      }
+      throw new Error("no verdict after 3 minutes");
+    } catch (err) {
+      setAppeal({ status: "error", error: (err as Error).message });
+    }
+  }
+
+  useEffect(() => {
+    fetch("/api/config")
+      .then((r) => r.json())
+      .then((c: { reppo?: boolean }) => setReppoEnabled(Boolean(c.reppo)))
+      .catch(() => setReppoEnabled(false));
+  }, []);
 
   useEffect(() => {
     if (new URLSearchParams(window.location.search).has("sample")) {
@@ -259,6 +299,44 @@ export default function Page() {
                   </ul>
                 ) : null}
               </div>
+
+              {!report.canGrantSpendPermission ? (
+                <div className="appeal">
+                  <h2>Second opinion</h2>
+                  {appeal.status === "idle" ? (
+                    <>
+                      <p className="lede">
+                        A denial is a big call. Reppo runs an independent panel over the evidence and returns
+                        ship, review, or block.
+                      </p>
+                      <button className="ghost" onClick={requestSecondOpinion} disabled={sample || !reppoEnabled}>
+                        {sample
+                          ? "Unavailable on the sample certificate"
+                          : reppoEnabled
+                            ? "Request independent review"
+                            : "Panel unavailable — REPPO_API_KEY not set"}
+                      </button>
+                    </>
+                  ) : null}
+                  {appeal.status === "pending" ? (
+                    <p className="lede">Submitted to the panel. A verdict usually lands in 30–90 seconds…</p>
+                  ) : null}
+                  {appeal.status === "error" ? <div className="err">{appeal.error}</div> : null}
+                  {appeal.status === "done" && appeal.verdict ? (
+                    <>
+                      <div className={`route ${appeal.verdict.route ?? "review"}`}>
+                        {appeal.verdict.status === "FAILED" ? "failed" : (appeal.verdict.route ?? "pending")}
+                      </div>
+                      <div className="metric" style={{ marginTop: 12 }}>
+                        panel score<b>{appeal.verdict.score ?? "—"}/100</b>
+                      </div>
+                      <p className="lede" style={{ marginTop: 12 }}>
+                        {appeal.verdict.reason ?? "No reason returned."}
+                      </p>
+                    </>
+                  ) : null}
+                </div>
+              ) : null}
             </>
           )}
         </section>
