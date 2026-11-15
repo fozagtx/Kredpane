@@ -20,10 +20,12 @@
       .inner { position: absolute; inset: 0; opacity: 0; }
       video, .still { position: absolute; inset: 0; width: 1920px; height: 1080px; object-fit: cover; }
 
-      .hook { display: flex; flex-direction: column; justify-content: center; height: 100%; padding: 0 160px; }
-      .hook h1 { font-size: 96px; font-weight: 700; line-height: 0.96; letter-spacing: -0.03em; text-transform: uppercase; max-width: 1600px; }
-      .hook .l2 { margin-top: 16px; }
-      .hook .l2 span { background: var(--lime); padding: 4px 22px; display: inline-block; }
+      .hook { display: flex; flex-direction: column; justify-content: center; height: 100%; padding: 0 140px; }
+      .hook h1 { font-size: 78px; font-weight: 700; line-height: 0.98; letter-spacing: -0.03em; text-transform: uppercase; max-width: 1560px; }
+      .hook .items { margin-top: 34px; display: flex; flex-direction: column; gap: 14px; }
+      .hook .item { display: flex; align-items: baseline; gap: 22px; }
+      .hook .num { font-size: 30px; font-weight: 700; background: var(--lime); padding: 2px 14px; }
+      .hook .item p { font-size: 40px; font-weight: 700; letter-spacing: -0.01em; }
 
       .end { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 24px; }
       .end .mark { width: 96px; height: 96px; border-radius: 22px; background: var(--lime); display: grid; place-items: center; }
@@ -33,42 +35,46 @@
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="60" data-width="1920" data-height="1080">
+    <div id="root" data-composition-id="main" data-start="0" data-duration="80" data-width="1920" data-height="1080">
 
-      <section id="hook" class="scene clip" data-start="0" data-duration="7" data-track-index="0">
+      <section id="hook" class="scene clip" data-start="0" data-duration="8" data-track-index="0">
         <div class="inner">
           <div class="hook">
-            <h1 id="h1">You will sign one this month.</h1>
-            <h1 id="h2" class="l2"><span>And you will not read it.</span></h1>
+            <h1 id="h1">Three things happen when you sign something you did not read.</h1>
+            <div class="items">
+              <div id="i1" class="item"><span class="num">1</span><p>You agree to the version they can change later.</p></div>
+              <div id="i2" class="item"><span class="num">2</span><p>You give up the right to sue.</p></div>
+              <div id="i3" class="item"><span class="num">3</span><p>You pay to leave.</p></div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section id="s1" class="scene clip" data-start="7" data-duration="9" data-track-index="1">
+      <section id="s1" class="scene clip" data-start="8" data-duration="10" data-track-index="1">
         <div class="inner">
-          <video id="v1" class="clip" data-start="7" data-duration="9" src="assets/video/part1.mp4" muted playsinline preload="auto"></video>
+          <video id="v1" class="clip" data-start="8" data-duration="10" src="assets/video/part1.mp4" muted playsinline preload="auto"></video>
         </div>
       </section>
 
-      <section id="s2" class="scene clip" data-start="16" data-duration="11" data-track-index="2">
+      <section id="s2" class="scene clip" data-start="18" data-duration="14" data-track-index="2">
         <div class="inner">
-          <video id="v2" class="clip" data-start="16" data-duration="11" src="assets/video/part2.mp4" muted playsinline preload="auto"></video>
+          <video id="v2" class="clip" data-start="18" data-duration="14" src="assets/video/part2.mp4" muted playsinline preload="auto"></video>
         </div>
       </section>
 
-      <section id="s3" class="scene clip" data-start="27" data-duration="17" data-track-index="3">
+      <section id="s3" class="scene clip" data-start="32" data-duration="22" data-track-index="3">
         <div class="inner">
-          <video id="v3" class="clip" data-start="27" data-duration="17" src="assets/video/part3.mp4" muted playsinline preload="auto"></video>
+          <video id="v3" class="clip" data-start="32" data-duration="22" src="assets/video/part3.mp4" muted playsinline preload="auto"></video>
         </div>
       </section>
 
-      <section id="mail" class="scene clip" data-start="44" data-duration="10" data-track-index="4">
+      <section id="mail" class="scene clip" data-start="54" data-duration="16" data-track-index="4">
         <div class="inner">
           <img id="mailimg" class="still" src="assets/email.png" alt="Kredpane drafting a pushback email" />
         </div>
       </section>
 
-      <section id="endcard" class="scene clip" data-start="54" data-duration="6" data-track-index="5">
+      <section id="endcard" class="scene clip" data-start="70" data-duration="10" data-track-index="5">
         <div class="inner">
           <div class="end">
             <div id="mark" class="mark">
@@ -80,31 +86,32 @@
             </div>
             <div id="word" class="word">Kredpane</div>
             <div id="url" class="url">kredpane.vercel.app</div>
-            <div id="cta" class="cta">Paste a contract. Read it in a minute.</div>
+            <div id="cta" class="cta">Before you sign the next one.</div>
           </div>
         </div>
       </section>
 
-      <audio id="vo" src="assets/vo.wav" data-start="2" data-duration="53.44"></audio>
-      <audio id="w1" src="assets/sfx-whoosh.wav" data-start="7" data-duration="0.4"></audio>
-      <audio id="w2" src="assets/sfx-whoosh.wav" data-start="16" data-duration="0.4"></audio>
-      <audio id="w3" src="assets/sfx-whoosh.wav" data-start="27" data-duration="0.4"></audio>
-      <audio id="w4" src="assets/sfx-whoosh.wav" data-start="44" data-duration="0.4"></audio>
-      <audio id="w5" src="assets/sfx-whoosh.wav" data-start="54" data-duration="0.4"></audio>
-      <audio id="click1" src="assets/sfx-click.wav" data-start="25.7" data-duration="0.2"></audio>
-      <audio id="chime1" src="assets/sfx-chime.wav" data-start="46.4" data-duration="0.32"></audio>
+      <audio id="bed" src="assets/music.m4a" data-start="0.6" data-duration="79.4"></audio>
+      <audio id="vo" src="assets/vo.wav" data-start="2" data-duration="73.15"></audio>
+      <audio id="w1" src="assets/sfx-whoosh.wav" data-start="8" data-duration="0.4"></audio>
+      <audio id="w2" src="assets/sfx-whoosh.wav" data-start="18" data-duration="0.4"></audio>
+      <audio id="w3" src="assets/sfx-whoosh.wav" data-start="32" data-duration="0.4"></audio>
+      <audio id="w4" src="assets/sfx-whoosh.wav" data-start="54" data-duration="0.4"></audio>
+      <audio id="w5" src="assets/sfx-whoosh.wav" data-start="70" data-duration="0.4"></audio>
+      <audio id="click1" src="assets/sfx-click.wav" data-start="27.7" data-duration="0.2"></audio>
+      <audio id="chime1" src="assets/sfx-chime.wav" data-start="56.2" data-duration="0.32"></audio>
     </div>
 
     <script>
       const tl = gsap.timeline({ paused: true });
 
       const scenes = [
-        ["#hook", 0, 7],
-        ["#s1", 7, 9],
-        ["#s2", 16, 11],
-        ["#s3", 27, 17],
-        ["#mail", 44, 10],
-        ["#endcard", 54, 6]
+        ["#hook", 0, 8],
+        ["#s1", 8, 10],
+        ["#s2", 18, 14],
+        ["#s3", 32, 22],
+        ["#mail", 54, 16],
+        ["#endcard", 70, 10]
       ];
 
       scenes.forEach(([sel, start, dur]) => {
@@ -112,18 +119,17 @@
         tl.set(`${sel} .inner`, { opacity: 0 }, start + dur - 0.02);
       });
 
-      tl.fromTo("#h1", { opacity: 0, filter: "blur(10px)", y: 20 }, { opacity: 1, filter: "blur(0px)", y: 0, duration: 0.5, ease: "power4.out" }, 0.35);
-      tl.fromTo("#h2", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 1.9);
-      tl.fromTo("#h2 span", { scaleX: 0.25, opacity: 0, transformOrigin: "left center" }, { scaleX: 1, opacity: 1, duration: 0.42, ease: "power3.out" }, 1.9);
-      tl.to("#h1", { y: -10, duration: 0.4, ease: "power2.in" }, 6.55);
-      tl.to("#h2", { y: -10, duration: 0.4, ease: "power2.in" }, 6.55);
+      tl.fromTo("#h1", { opacity: 0, filter: "blur(10px)", y: 20 }, { opacity: 1, filter: "blur(0px)", y: 0, duration: 0.5, ease: "power4.out" }, 0.3);
+      tl.fromTo("#i1", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, 2.1);
+      tl.fromTo("#i2", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, 3.4);
+      tl.fromTo("#i3", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, 4.6);
 
-      tl.fromTo("#mailimg", { scale: 1.0 }, { scale: 1.05, duration: 9.5, ease: "none" }, 44.2);
+      tl.fromTo("#mailimg", { scale: 1.0 }, { scale: 1.05, duration: 15.5, ease: "none" }, 54.2);
 
-      tl.fromTo("#mark", { scale: 0.4, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.45, ease: "power3.out" }, 54.3);
-      tl.fromTo("#word", { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 54.65);
-      tl.fromTo("#url", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power2.out" }, 55.1);
-      tl.fromTo("#cta", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 55.5);
+      tl.fromTo("#mark", { scale: 0.4, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.45, ease: "power3.out" }, 70.4);
+      tl.fromTo("#word", { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 70.75);
+      tl.fromTo("#url", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power2.out" }, 71.2);
+      tl.fromTo("#cta", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 71.6);
 
       window.__timelines["main"] = tl;
       tl.seek(0);
