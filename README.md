@@ -1,47 +1,73 @@
 # Kredpane
 
-Rewrites hospital discharge instructions to a reading target, and proves nothing was lost on the way.
+Reads a consumer contract before you sign it, scores how one-sided it is, and rewrites the unfair terms.
 
-## The problem
+Live: **https://kredpane.vercel.app**
 
-- Nearly 9 in 10 US adults struggle with health information written in complex terms (CDC).
-- Only 12% have proficient health literacy (National Assessment of Adult Literacy).
-- AMA, HHS and NIH recommend patient materials at a **6th-grade level**; studies of real discharge documents find they sit above it.
+## The idea
 
-Low health literacy is estimated to cost ~1 million avoidable hospital visits and $25B+ a year.
+Most people sign leases, gym memberships and terms of service they have never read. The traps are not hidden — they are stated plainly, in language written for the company's lawyer, on page nine.
 
-## What it does
+Kredpane checks ten specific clause types, weights them into a 0–100 risk score, then rewrites the contract to remove them and **re-scores the rewrite** to prove nothing was lost on the way.
 
-You paste source instructions — or drop a PDF or a photo of the paperwork — and pick a target grade. The app rewrites, measures, and refuses to hand back text that lost a dose, a time or a phone number.
+## Three pages
 
-Uploads: PDFs are parsed with `unpdf`; images (PNG/JPEG/WebP) are transcribed by SERV's vision model. A scanned PDF with no text layer is rejected with a message telling you to upload the photo instead.
+| route | what it is |
+| --- | --- |
+| `/` | landing page. Marketing only — it processes nothing. |
+| `/scan` | the form: paste text, upload a PDF or photo, optional company name, risk target |
+| `/dashboard` | the result: risk before → after, the original, the rewrite, and every finding |
 
-Three checks per pass, all computed in code:
+Scanning hands the result to `/dashboard` through `sessionStorage` and routes there. Opening `/dashboard` with no result redirects to `/`.
 
-1. **Reading grade** — Flesch–Kincaid.
-2. **Clinical terms** — abbreviations (`PO`, `BID`, `q6h`, `SpO2`) must reach zero; drug names are reported but allowed.
-3. **Facts kept** — every dose, duration, percentage and phone number from the source must survive verbatim.
+## How the analysis works
 
-If a pass fails, the failure is fed back as the constraint for the next pass. Max three passes, and it stops early when nothing changes.
+Ten checks in `lib/contract.ts`, each with a weight, a plain-English explanation and the sentence that triggered it:
+
+| clause | severity | weight |
+| --- | --- | --- |
+| arbitration / class-action waiver | critical | 25 |
+| unilateral changes without notice | high | 20 |
+| one-sided indemnity | high | 20 |
+| termination for any reason | high | 20 |
+| automatic renewal | high | 15 |
+| late fees and interest | medium | 10 |
+| non-refundable fees | medium | 10 |
+| data sharing | medium | 10 |
+| early termination penalty | medium | 10 |
+| distant venue / exclusive jurisdiction | medium | 5 |
+
+Risk score is the sum, capped at 100. Detection is regex over the contract text, so it is deterministic and quotable — every finding shows the clause it came from.
+
+## How the rewrite works
+
+Up to three passes. Each pass is scored, and anything still unfair becomes the instruction for the next one:
+
+1. rewrite the contract to remove or soften the listed terms
+2. re-analyse it, and extract every fee, rate and notice period from the original
+3. if the risk is still above target, or a number went missing, feed both failures back and try again
+
+The dashboard shows which terms were fixed and which are still there, next to the number check.
 
 ## Measured
 
-One real run on the bundled sample (pneumonia discharge), target grade 6:
+Real runs against the live API on the bundled gym contract:
 
-| | reading grade | clinical terms | facts kept |
-| --- | --- | --- | --- |
-| source | 8.8 | 12 | 10/10 |
-| after pass 1 | **4.4** | **5** | **10/10** |
+| run | risk before | risk after | terms fixed | numbers kept |
+| --- | --- | --- | --- | --- |
+| 1 | 100 | 10 | 6 of 7 | 6 of 6 |
+| 2 | 100 | 35 | 5 of 7 | 6 of 6 |
+| 3 | 100 | 50 | 3 of 7 | 5 of 5 |
 
-The remaining five terms are `pneumonia`, `amoxicillin-clavulanate`, `acetaminophen`, `saturation`, `emergency department` — reported, not silently dropped.
+The score moves, and the numbers survive — that is the whole claim. Results vary between runs because the rewrite is model-driven.
 
 ## Sponsor stack
 
-**SERV Reasoning (OpenServ)** — every rewrite pass, `https://inference-api.openserv.ai/v1`.
+**SERV Reasoning (OpenServ)** — every rewrite pass and every image transcription. `https://inference-api.openserv.ai/v1`, model `gpt-5.4`.
 
-**Reppo Evaluation API** — optional independent panel on the final text (`taskType: "response"`). Async, 60–100 seconds, so it sits behind a button rather than blocking the loop.
+**Reppo Evaluation API** — the "Independent panel check" on the dashboard. Submits the rewritten contract, polls until the verdict settles, and returns score, route, confidence and reasoning. This is a manual second opinion, not part of the rewrite loop.
 
-Dolphin and Kite are not wired.
+**Dolphin and Kite are not used.** No code, keys or config for either.
 
 ## Run
 
@@ -52,26 +78,30 @@ export REPPO_API_KEY=...   # optional, enables the panel check
 npm run dev                # http://localhost:3000
 ```
 
-Routes: `/`, `/api/improve`, `/api/evaluate`, `/api/config`.
+Uploads: PDFs are parsed with `unpdf`; PNG/JPEG/WebP go to SERV's vision model for transcription. A scanned PDF with no text layer is rejected with a message pointing at the photo route.
 
 ## Layout
 
 ```
 app/
-  page.tsx              before/after panes, metric cards, pass ledger
-  providers.tsx         Chakra provider
-  api/improve/route.ts  rewrite loop
-  api/evaluate/route.ts Reppo submit + poll
+  page.tsx                landing
+  scan/page.tsx           paste / upload form
+  dashboard/page.tsx      results
+  api/review/route.ts     analyse + rewrite loop
+  api/extract/route.ts    PDF text and image transcription
+  api/evaluate/route.ts   Reppo submit + poll
+  api/config/route.ts     which keys are present
 lib/
-  readability.ts        Flesch-Kincaid, jargon matching, fact extraction
-  instructions.ts       prompts, feedback, loop control
-  serv.ts               SERV chat client
-  reppo.ts              Reppo client
+  contract.ts             the ten checks, scoring, rewrite loop
+  facts.ts                fee/rate/notice extraction and survival check
+  serv.ts                 SERV client
+  reppo.ts                Reppo client
+components/ui/notch-navbar.tsx
 ```
 
 ## Limits
 
-- The model writes at grade 8–9 unprompted, so the gain is real but modest, not 14 → 6.
-- Flesch–Kincaid is gameable: dropping punctuation or using shorthand lowers the score without improving comprehension. That is why grade is paired with a jargon check and fact retention rather than trusted alone.
-- Fact extraction is regex over units, percentages and phone patterns. It catches dropped doses, not distorted meaning.
-- Without `REPPO_API_KEY` the loop still works; only the panel check is unavailable.
+- Clause detection is regex-driven. It is precise on the ten patterns above and blind to anything else — a contract can be hostile in ways this list does not cover.
+- A rewrite can soften a clause instead of deleting it. The re-score is what you should trust, not the prose.
+- The "Under the Hood" panel on the landing page is inherited copy from the reference design and does **not** describe this build: it says Llama 3.3 70B and twelve risk types, while this runs SERV `gpt-5.4` with ten checks.
+- Not legal advice. It tells you which terms are worth questioning; it does not tell you whether a term is enforceable where you live.
