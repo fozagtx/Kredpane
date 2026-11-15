@@ -1,7 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { Badge, Box, Button, Flex, Heading, HStack, NativeSelect, Separator, SimpleGrid, Spinner, Stack, Text, Textarea } from "@chakra-ui/react";
+import {
+  Badge,
+  Box,
+  Button,
+  Card,
+  Container,
+  Flex,
+  Heading,
+  HStack,
+  NativeSelect,
+  SimpleGrid,
+  Spinner,
+  Stack,
+  Text,
+  Textarea
+} from "@chakra-ui/react";
 import type { Improvement } from "../lib/instructions";
 import type { ReppoVerdict } from "../lib/reppo";
 
@@ -28,6 +43,7 @@ export default function Page() {
 
   const finalPass = result ? result.passes[result.passes.length - 1] : null;
   const factsKept = result && finalPass ? result.facts - finalPass.missed.length : 0;
+  const gradeDrop = result ? Number((result.after.grade - result.before.grade).toFixed(1)) : 0;
 
   async function run(): Promise<void> {
     setBusy(true);
@@ -57,10 +73,7 @@ export default function Page() {
       const res = await fetch("/api/evaluate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userMessage: "Hospital discharge instructions for a patient to follow at home.",
-          reply: final
-        })
+        body: JSON.stringify({ userMessage: "Hospital discharge instructions for a patient to follow at home.", reply: final })
       });
       const data = (await res.json()) as { id?: string; error?: string };
       if (!res.ok || !data.id) throw new Error(data.error || "could not submit");
@@ -83,236 +96,263 @@ export default function Page() {
   }
 
   return (
-    <Box maxW="7xl" mx="auto" px={{ base: 4, md: 8 }} py={{ base: 6, md: 10 }}>
-      <Flex align="center" gap={4} wrap="wrap" pb={5} borderBottomWidth="2px" borderColor="gray.900">
-        <Heading size="lg" letterSpacing="tight">
-          RATCHET
-        </Heading>
-        <Text color="gray.600" fontSize="sm" maxW="md">
-          Rewrites hospital instructions to a reading target, and refuses to lose a dose, a time or a phone number on the way.
-        </Text>
-        <HStack ml="auto" gap={2}>
-          <Text fontSize="xs" fontWeight="bold" textTransform="uppercase" letterSpacing="wider" color="gray.500">
-            target
-          </Text>
-          <NativeSelect.Root size="sm" width="auto">
-            <NativeSelect.Field
-              value={target}
-              onChange={(e) => setTarget(e.target.value)}
-              borderWidth="1.5px"
-              borderColor="gray.900"
-              borderRadius="0"
-              bg="white"
-              fontSize="sm"
-              fontWeight="semibold"
-              width="auto"
-            >
-              {TARGETS.map((t) => (
-                <option key={t} value={t}>
-                  grade {t}
-                </option>
-              ))}
-            </NativeSelect.Field>
-          </NativeSelect.Root>
-          <Button colorPalette="blue" size="sm" onClick={() => void run()} disabled={busy}>
-            {busy ? <Spinner size="xs" /> : "rewrite"}
-          </Button>
-        </HStack>
-      </Flex>
-
-      <SimpleGrid columns={{ base: 1, md: 3 }} mt={6} borderWidth="2px" borderColor="gray.900">
-        <MetricCell
-          label="Reading grade"
-          before={result ? result.before.grade : null}
-          after={result ? result.after.grade : null}
-          note={result ? `target ${result.target} · ${result.hit ? "reached" : "not reached"}` : "Flesch-Kincaid"}
-        />
-        <MetricCell
-          label="Clinical terms"
-          before={result ? result.before.jargon.length : null}
-          after={finalPass ? finalPass.metrics.jargon.length : null}
-          note={finalPass && finalPass.metrics.jargon.length ? finalPass.metrics.jargon.join(", ") : "abbreviations and jargon"}
-        />
-        <MetricCell
-          label="Facts kept"
-          before={null}
-          after={result ? factsKept : null}
-          afterSuffix={result ? ` / ${result.facts}` : ""}
-          note={finalPass && finalPass.missed.length ? `missing: ${finalPass.missed.join(", ")}` : "doses, times, phone numbers"}
-        />
-      </SimpleGrid>
-
-      {error ? (
-        <Text color="red.600" fontWeight="semibold" mt={4} fontSize="sm">
-          {error}
-        </Text>
-      ) : null}
-
-      <SimpleGrid columns={{ base: 1, lg: 2 }} gap={6} mt={6}>
-        <Box borderWidth="2px" borderColor="gray.900">
-          <Flex align="center" gap={3} px={4} py={2.5} borderBottomWidth="2px" borderColor="gray.900" bg="gray.50">
-            <Text fontSize="xs" fontWeight="bold" textTransform="uppercase" letterSpacing="wider">
-              Before · source
+    <Box bg="gray.50" minH="100vh">
+      <Container maxW="6xl" py={{ base: 6, md: 10 }}>
+        <Flex align="center" gap={4} wrap="wrap" mb={8}>
+          <Box>
+            <Heading size="2xl" letterSpacing="tight">
+              Ratchet
+            </Heading>
+            <Text color="gray.600" fontSize="sm" mt={1}>
+              Rewrites discharge instructions to a reading target, and refuses to lose a dose, a time or a phone number on the way.
             </Text>
-            <Badge ml="auto" variant="solid" colorPalette="gray">
-              {result ? `grade ${result.before.grade}` : "editable"}
-            </Badge>
-          </Flex>
-          <Textarea
-            value={source}
-            onChange={(e) => setSource(e.target.value)}
-            spellCheck={false}
-            minH="430px"
-            border="none"
-            borderRadius="0"
-            fontFamily="inherit"
-            fontSize="sm"
-            lineHeight="tall"
-            p={4}
-            resize="vertical"
-            _focusVisible={{ outline: "3px solid", outlineColor: "blue.500", outlineOffset: "-3px" }}
-          />
-        </Box>
-
-        <Box borderWidth="2px" borderColor="gray.900">
-          <Flex align="center" gap={2} px={4} py={2.5} borderBottomWidth="2px" borderColor="gray.900" bg="gray.50">
-            <Text fontSize="xs" fontWeight="bold" textTransform="uppercase" letterSpacing="wider">
-              After · pass {finalPass ? finalPass.n : "—"}
-            </Text>
-            {finalPass ? (
-              <Badge ml="auto" variant="solid" colorPalette={finalPass.metrics.grade <= result!.target ? "green" : "orange"}>
-                grade {finalPass.metrics.grade}
-              </Badge>
-            ) : null}
-            {result ? (
-              <Button size="xs" variant="outline" onClick={() => void checkWithPanel()} disabled={panel.status === "pending"}>
-                {panel.status === "pending" ? "panel…" : "panel check"}
-              </Button>
-            ) : null}
-          </Flex>
-          {finalPass ? (
-            <Box p={4} fontSize="sm" lineHeight="taller" whiteSpace="pre-wrap">
-              {finalPass.text}
-            </Box>
-          ) : (
-            <Box p={6} color="gray.500" fontSize="sm">
-              Press rewrite. Every pass is measured; if the grade is still too high, or a dose or phone number went missing, that failure is fed back and it tries again.
-            </Box>
-          )}
-        </Box>
-      </SimpleGrid>
-
-      {result ? (
-        <>
-          <Box mt={8} pt={5} borderTopWidth="2px" borderColor="gray.900">
-            <Text fontSize="xs" fontWeight="bold" textTransform="uppercase" letterSpacing="wider" color="gray.500" mb={3}>
-              Passes
-            </Text>
-            <Stack gap={0}>
-              {result.passes.map((p) => (
-                <Flex key={p.n} align="baseline" gap={4} py={2.5} borderBottomWidth="1px" borderColor="gray.200" wrap="wrap">
-                  <Text fontWeight="semibold" minW="70px" fontSize="sm">
-                    {p.n === 0 ? "source" : `pass ${p.n}`}
-                  </Text>
-                  <Text fontFamily="mono" fontWeight="bold" fontSize="lg" minW="48px">
-                    {p.metrics.grade}
-                  </Text>
-                  <Text color="gray.600" fontSize="xs">
-                    {p.metrics.words} words · avg sentence {p.metrics.avgSentence} · {p.metrics.jargon.length} clinical terms ·{" "}
-                    {p.missed.length ? `${p.missed.length} facts missing` : "facts intact"}
-                  </Text>
-                  <Badge ml="auto" variant="subtle" colorPalette={p.metrics.grade <= result.target ? "green" : "orange"}>
-                    {p.metrics.grade <= result.target ? "target" : "above"}
-                  </Badge>
-                </Flex>
-              ))}
-            </Stack>
           </Box>
+          <HStack ml="auto" gap={2}>
+            <NativeSelect.Root size="sm" width="130px">
+              <NativeSelect.Field value={target} onChange={(e) => setTarget(e.target.value)}>
+                {TARGETS.map((t) => (
+                  <option key={t} value={t}>
+                    grade {t}
+                  </option>
+                ))}
+              </NativeSelect.Field>
+            </NativeSelect.Root>
+            <Button colorPalette="blue" onClick={() => void run()} disabled={busy}>
+              {busy ? <Spinner size="xs" /> : "Rewrite"}
+            </Button>
+          </HStack>
+        </Flex>
 
-          {panel.status !== "idle" ? (
-            <Box mt={6} borderWidth="2px" borderColor="gray.900" p={4}>
-              <Text fontSize="xs" fontWeight="bold" textTransform="uppercase" letterSpacing="wider" color="gray.500">
-                Independent panel
+        <SimpleGrid columns={{ base: 1, md: 3 }} gap={4}>
+          <MetricCard
+            label="Reading grade"
+            value={result ? result.after.grade : undefined}
+            from={result ? result.before.grade : undefined}
+            note={result ? `target ${result.target} · ${result.hit ? "reached" : "not reached"}` : "Flesch–Kincaid"}
+            tone={result ? (result.hit ? "green" : "orange") : undefined}
+          />
+          <MetricCard
+            label="Clinical terms left"
+            value={finalPass ? finalPass.metrics.jargon.length : undefined}
+            from={result ? result.before.jargon.length : undefined}
+            note={finalPass && finalPass.metrics.jargon.length ? finalPass.metrics.jargon.join(", ") : "abbreviations and jargon"}
+            tone={finalPass && finalPass.metrics.jargon.length === 0 ? "green" : undefined}
+          />
+          <MetricCard
+            label="Facts kept"
+            value={result ? `${factsKept}/${result.facts}` : undefined}
+            note={finalPass && finalPass.missed.length ? `missing: ${finalPass.missed.join(", ")}` : "doses, times, phone numbers"}
+            tone={finalPass && finalPass.missed.length === 0 ? "green" : result ? "red" : undefined}
+          />
+        </SimpleGrid>
+
+        {error ? (
+          <Card.Root mt={4} borderColor="red.200" bg="red.50">
+            <Card.Body py={3}>
+              <Text color="red.700" fontSize="sm" fontWeight="medium">
+                {error}
               </Text>
-              <Separator my={3} />
-              {panel.status === "pending" ? (
-                <HStack gap={2} color="gray.600" fontSize="sm">
-                  <Spinner size="xs" />
-                  <Text>Submitted. The panel usually settles in 60–100 seconds.</Text>
-                </HStack>
-              ) : null}
-              {panel.status === "error" ? (
-                <Text color="red.600" fontWeight="semibold" fontSize="sm">
-                  {panel.error}
+            </Card.Body>
+          </Card.Root>
+        ) : null}
+
+        <SimpleGrid columns={{ base: 1, lg: 2 }} gap={4} mt={4}>
+          <Card.Root>
+            <Card.Header pb={3}>
+              <Flex align="center" gap={3}>
+                <Card.Title fontSize="sm" textTransform="uppercase" letterSpacing="wider" color="gray.500">
+                  Source
+                </Card.Title>
+                <Badge ml="auto" colorPalette={result ? "gray" : "blue"} variant="subtle">
+                  {result ? `grade ${result.before.grade}` : "editable"}
+                </Badge>
+              </Flex>
+            </Card.Header>
+            <Card.Body pt={0}>
+              <Textarea
+                value={source}
+                onChange={(e) => setSource(e.target.value)}
+                spellCheck={false}
+                minH="420px"
+                variant="subtle"
+                fontSize="sm"
+                lineHeight="tall"
+                resize="vertical"
+              />
+            </Card.Body>
+          </Card.Root>
+
+          <Card.Root>
+            <Card.Header pb={3}>
+              <Flex align="center" gap={2}>
+                <Card.Title fontSize="sm" textTransform="uppercase" letterSpacing="wider" color="gray.500">
+                  Rewritten → pass {finalPass ? finalPass.n : "—"}
+                </Card.Title>
+                {finalPass ? (
+                  <Badge ml="auto" colorPalette={finalPass.metrics.grade <= result!.target ? "green" : "orange"} variant="subtle">
+                    grade {finalPass.metrics.grade}
+                  </Badge>
+                ) : null}
+                {result ? (
+                  <Button size="xs" variant="outline" onClick={() => void checkWithPanel()} disabled={panel.status === "pending"}>
+                    {panel.status === "pending" ? "panel…" : "panel check"}
+                  </Button>
+                ) : null}
+              </Flex>
+            </Card.Header>
+            <Card.Body pt={0}>
+              {finalPass ? (
+                <Text fontSize="sm" lineHeight="taller" whiteSpace="pre-wrap">
+                  {finalPass.text}
                 </Text>
-              ) : null}
-              {panel.status === "done" && panel.verdict ? (
-                <Stack gap={3}>
-                  <HStack gap={3}>
-                    <Text fontFamily="mono" fontWeight="bold" fontSize="2xl">
-                      {panel.verdict.score ?? "—"}
-                    </Text>
-                    {panel.verdict.route ? <Badge variant="solid">{panel.verdict.route}</Badge> : null}
-                  </HStack>
-                  {panel.verdict.reason ? (
-                    <Text fontSize="sm" color="gray.600">
-                      {panel.verdict.reason}
+              ) : (
+                <Flex minH="420px" align="center" justify="center" px={6}>
+                  <Text color="gray.500" fontSize="sm" textAlign="center" maxW="sm">
+                    Press Rewrite. Every pass is measured; if the grade is still too high, or a dose or phone number went
+                    missing, that failure is fed back and it tries again.
+                  </Text>
+                </Flex>
+              )}
+            </Card.Body>
+          </Card.Root>
+        </SimpleGrid>
+
+        {result ? (
+          <Stack gap={4} mt={8}>
+            <Card.Root>
+              <Card.Header pb={2}>
+                <Card.Title fontSize="sm" textTransform="uppercase" letterSpacing="wider" color="gray.500">
+                  Passes
+                </Card.Title>
+              </Card.Header>
+              <Card.Body pt={0}>
+                <Stack gap={0} divideY="1px">
+                  {result.passes.map((p) => (
+                    <Flex key={p.n} align="baseline" gap={4} py={3} wrap="wrap">
+                      <Text fontWeight="medium" minW="70px" fontSize="sm">
+                        {p.n === 0 ? "source" : `pass ${p.n}`}
+                      </Text>
+                      <Text fontWeight="bold" fontSize="lg" minW="44px">
+                        {p.metrics.grade}
+                      </Text>
+                      <Text color="gray.600" fontSize="xs">
+                        {p.metrics.words} words · avg sentence {p.metrics.avgSentence} · {p.metrics.jargon.length} clinical terms ·{" "}
+                        {p.missed.length ? `${p.missed.length} facts missing` : "facts intact"}
+                      </Text>
+                      <Badge ml="auto" variant="subtle" colorPalette={p.metrics.grade <= result.target ? "green" : "orange"}>
+                        {p.metrics.grade <= result.target ? "target" : "above"}
+                      </Badge>
+                    </Flex>
+                  ))}
+                </Stack>
+              </Card.Body>
+            </Card.Root>
+
+            {panel.status !== "idle" ? (
+              <Card.Root>
+                <Card.Header pb={2}>
+                  <Card.Title fontSize="sm" textTransform="uppercase" letterSpacing="wider" color="gray.500">
+                    Independent panel
+                  </Card.Title>
+                </Card.Header>
+                <Card.Body pt={0}>
+                  {panel.status === "pending" ? (
+                    <HStack gap={2} color="gray.600">
+                      <Spinner size="xs" />
+                      <Text fontSize="sm">Submitted. The panel usually settles in 60–100 seconds.</Text>
+                    </HStack>
+                  ) : null}
+                  {panel.status === "error" ? (
+                    <Text color="red.600" fontSize="sm" fontWeight="medium">
+                      {panel.error}
                     </Text>
                   ) : null}
-                  <HStack gap={2} wrap="wrap">
-                    {Object.entries(panel.verdict.rubric).map(([k, v]) => (
-                      <Badge key={k} variant="outline">
-                        {k} {v}
-                      </Badge>
-                    ))}
-                  </HStack>
-                </Stack>
-              ) : null}
-            </Box>
-          ) : null}
-        </>
-      ) : null}
+                  {panel.status === "done" && panel.verdict ? (
+                    <Stack gap={3}>
+                      <HStack gap={3}>
+                        <Text fontWeight="bold" fontSize="3xl" lineHeight="1">
+                          {panel.verdict.score ?? "—"}
+                        </Text>
+                        <Badge colorPalette={panel.verdict.route === "ship" ? "green" : panel.verdict.route === "block" ? "red" : "orange"} variant="subtle">
+                          {panel.verdict.route ?? "unknown"}
+                        </Badge>
+                        <Text color="gray.500" fontSize="sm">
+                          {panel.verdict.confidence ? `${panel.verdict.confidence} confidence` : ""}
+                        </Text>
+                      </HStack>
+                      {panel.verdict.reason ? (
+                        <Text fontSize="sm" color="gray.600">
+                          {panel.verdict.reason}
+                        </Text>
+                      ) : null}
+                      <HStack gap={2} wrap="wrap">
+                        {Object.entries(panel.verdict.rubric).map(([k, v]) => (
+                          <Badge key={k} variant="surface">
+                            {k} {v}
+                          </Badge>
+                        ))}
+                      </HStack>
+                    </Stack>
+                  ) : null}
+                </Card.Body>
+              </Card.Root>
+            ) : null}
+
+            <Text fontSize="xs" color="gray.500">
+              Grade moved {gradeDrop < 0 ? gradeDrop : "0"} points across {result.passes.length - 1} pass
+              {result.passes.length - 1 === 1 ? "" : "es"}. Facts checked: {result.facts}. Terms still present:{" "}
+              {finalPass?.metrics.jargon.length ?? 0}.
+            </Text>
+          </Stack>
+        ) : null}
+      </Container>
     </Box>
   );
 }
 
-function MetricCell({
+function MetricCard({
   label,
-  before,
-  after,
-  afterSuffix,
-  note
+  value,
+  from,
+  note,
+  tone
 }: {
   label: string;
-  before: number | null;
-  after: number | null;
-  afterSuffix?: string;
+  value?: string | number;
+  from?: number;
   note: string;
+  tone?: "green" | "orange" | "red";
 }) {
   return (
-    <Box p={5} borderRightWidth={{ base: 0, md: "2px" }} borderBottomWidth={{ base: "2px", md: 0 }} borderColor="gray.900" _last={{ borderRightWidth: 0, borderBottomWidth: 0 }}>
-      <Text fontSize="xs" fontWeight="bold" textTransform="uppercase" letterSpacing="wider" color="gray.500">
-        {label}
-      </Text>
-      <HStack align="baseline" gap={2} mt={1}>
-        {before !== null ? (
-          <>
-            <Text fontSize="4xl" fontWeight="extrabold" letterSpacing="tight" lineHeight="1">
-              {before}
-            </Text>
-            <Text color="gray.400" fontSize="2xl">
-              →
-            </Text>
-          </>
-        ) : null}
-        <Text fontSize="4xl" fontWeight="extrabold" letterSpacing="tight" lineHeight="1">
-          {after ?? "—"}
-          {afterSuffix ?? ""}
+    <Card.Root>
+      <Card.Body>
+        <Text fontSize="xs" fontWeight="medium" textTransform="uppercase" letterSpacing="wider" color="gray.500">
+          {label}
         </Text>
-      </HStack>
-      <Text color="gray.600" fontSize="xs" mt={2} lineClamp={2}>
-        {note}
-      </Text>
-    </Box>
+        <HStack align="baseline" gap={2} mt={2}>
+          {from !== undefined ? (
+            <>
+              <Text fontSize="3xl" fontWeight="semibold" color="gray.400" lineHeight="1">
+                {from}
+              </Text>
+              <Text color="gray.300" fontSize="xl">
+                →
+              </Text>
+            </>
+          ) : null}
+          <Text fontSize="3xl" fontWeight="bold" lineHeight="1">
+            {value ?? "—"}
+          </Text>
+          {tone ? (
+            <Badge colorPalette={tone} variant="subtle" size="sm">
+              {tone === "green" ? "pass" : tone === "red" ? "fail" : "check"}
+            </Badge>
+          ) : null}
+        </HStack>
+        <Text color="gray.600" fontSize="xs" mt={2} lineClamp={2}>
+          {note}
+        </Text>
+      </Card.Body>
+    </Card.Root>
   );
 }
