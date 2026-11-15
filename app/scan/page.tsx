@@ -75,6 +75,7 @@ export default function ScanPage() {
       const data = (await res.json()) as Review & { error?: string };
       if (!res.ok) throw new Error(data.error || "could not review the contract");
       sessionStorage.setItem("kredpane:result", JSON.stringify(data));
+      sessionStorage.setItem("kredpane:company", company.trim());
       router.push("/dashboard");
     } catch (err) {
       setError((err as Error).message);
