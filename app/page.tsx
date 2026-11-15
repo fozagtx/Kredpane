@@ -135,7 +135,7 @@ export default function Page() {
       <Box
         id="top"
         className="grid-pattern"
-        bg="var(--page)"
+        bg="var(--s1)"
         borderBottom="1px solid var(--line)"
         borderBottomRadius="64px"
         pt="128px"
