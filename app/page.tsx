@@ -123,7 +123,7 @@ export default function Page() {
         <Flex align="center" gap={4} wrap="wrap" mb={8}>
           <Box>
             <Heading size="2xl" letterSpacing="tight">
-              Ratchet
+              Kredpane
             </Heading>
             <Text color="gray.600" fontSize="sm" mt={1}>
               Rewrites discharge instructions to a reading target, and refuses to lose a dose, a time or a phone number on the way.

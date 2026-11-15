@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Provider } from "./providers";
 
 export const metadata: Metadata = {
-  title: "Ratchet — instructions rewritten to a reading target",
+  title: "Kredpane — instructions rewritten to a reading target",
   description: "Hospital instructions rewritten to a grade level, with every dose, time and phone number verified as intact."
 };
 

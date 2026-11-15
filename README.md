@@ -1,4 +1,4 @@
-# Ratchet
+# Kredpane
 
 Rewrites hospital discharge instructions to a reading target, and proves nothing was lost on the way.
 
