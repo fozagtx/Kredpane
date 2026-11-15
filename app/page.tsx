@@ -1,17 +1,15 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Box, Button, Flex, HStack, Input, NativeSelect, Spinner, Text, Textarea } from "@chakra-ui/react";
 import type { Review } from "../lib/contract";
-import type { ReppoVerdict } from "../lib/reppo";
 import { NotchNavbar } from "../components/ui/notch-navbar";
 import LogoIcon from "../assets/logo/logo-icon";
 
 const YELLOW = "#d6ff34";
-const PAGE = "var(--page)";
 const SURFACE_1 = "var(--s1)";
 const SURFACE_2 = "var(--s2)";
-const SURFACE_3 = "var(--s3)";
 const MUTED = "var(--muted)";
 const FOREGROUND = "var(--fg)";
 const ACCENT = "#3d5500";
@@ -19,7 +17,6 @@ const MINT = "#5dffc0";
 const CYAN = "#71f6ff";
 const BLUE = "#7da2ff";
 const LAVENDER = "#c1adff";
-const DANGER = "#ff4444";
 const CREAM = "var(--cream)";
 
 const SAMPLE = `GOLDEN FITNESS — MEMBERSHIP AGREEMENT
@@ -53,35 +50,25 @@ const FAQ = [
   { q: "What kinds of clauses does Kredpane flag?", a: "Arbitration and class-action waivers, auto-renewal, unilateral changes, one-sided indemnity, termination for any reason, late fees, non-refundable deposits, distant courts, data sharing and exit penalties." },
   { q: "Can I upload a PDF?", a: "Yes. PDFs are read directly, and photographs of the paperwork are transcribed by the model." },
   { q: "What does the severity score mean?", a: "Each clause carries a weight, and the contract's risk score is the sum, capped at 100. 0 means nothing unfair was found; 100 means it is stacked against you." },
-  { q: "What is the negotiation email feature?", a: "After a scan you can send the contract to an independent panel, which reviews the rewrite and returns a score, a decision and its reasoning." },
+  { q: "What is the negotiation email feature?", a: "After a scan you can send the rewrite to an independent panel, which returns a score, a decision and its reasoning." },
   { q: "Do you store my ToS text?", a: "No. The text is sent to the model for analysis and is not written to a database." },
   { q: "Do I need to create an account?", a: "No. Paste, scan, read." },
   { q: "What AI model powers Kredpane?", a: "Kredpane runs on OpenServ's SERV Reasoning engine, with an optional independent review from the Reppo evaluation network." }
 ];
 
-function sleep(ms: number): Promise<void> {
-  return new Promise((r) => setTimeout(r, ms));
-}
-
 export default function Page() {
   const [source, setSource] = useState<string>(SAMPLE);
   const [company, setCompany] = useState<string>("");
-  const [emailHint, setEmailHint] = useState<boolean>(false);
   const [tab, setTab] = useState<"paste" | "upload">("paste");
   const [target, setTarget] = useState<string>("25");
   const [busy, setBusy] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
-  const [review, setReview] = useState<Review | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const [panel, setPanel] = useState<{ status: "idle" | "pending" | "done" | "error"; verdict?: ReppoVerdict; error?: string }>({ status: "idle" });
   const [extracting, setExtracting] = useState<boolean>(false);
   const [docName, setDocName] = useState<string>("");
+  const [emailHint, setEmailHint] = useState<boolean>(false);
   const fileRef = useRef<HTMLInputElement>(null);
-  const resultsRef = useRef<HTMLDivElement>(null);
-
-  const finalPass = review ? review.passes[review.passes.length - 1] : null;
-  const remaining = finalPass?.analysis.findings ?? [];
-  const factsKept = review && finalPass ? review.facts - finalPass.missed.length : 0;
+  const router = useRouter();
 
   async function onFile(file: File): Promise<void> {
     setExtracting(true);
@@ -105,7 +92,6 @@ export default function Page() {
   async function run(): Promise<void> {
     setBusy(true);
     setError("");
-    setPanel({ status: "idle" });
     try {
       const text = company.trim() ? `Company under review: ${company.trim()}\n\n${source}` : source;
       const res = await fetch("/api/review", {
@@ -115,52 +101,30 @@ export default function Page() {
       });
       const data = (await res.json()) as Review & { error?: string };
       if (!res.ok) throw new Error(data.error || "could not review the contract");
-      setReview(data);
-      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+      sessionStorage.setItem("kredpane:result", JSON.stringify(data));
+      router.push("/dashboard");
     } catch (err) {
       setError((err as Error).message);
-    } finally {
       setBusy(false);
     }
   }
 
-  async function checkWithPanel(): Promise<void> {
-    if (!review) return;
-    setPanel({ status: "pending" });
-    try {
-      const final = review.passes[review.passes.length - 1].text;
-      const res = await fetch("/api/evaluate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userMessage: "A consumer contract revised to remove unfair terms.", reply: final })
-      });
-      const data = (await res.json()) as { id?: string; error?: string };
-      if (!res.ok || !data.id) throw new Error(data.error || "could not submit");
-      const deadline = Date.now() + 240_000;
-      while (Date.now() < deadline) {
-        await sleep(4000);
-        const poll = await fetch(`/api/evaluate?id=${data.id}`);
-        const verdict = (await poll.json()) as ReppoVerdict & { error?: string };
-        if (!poll.ok) throw new Error(verdict.error || "poll failed");
-        if (verdict.status === "COMPLETED" || verdict.status === "FAILED") {
-          setPanel({ status: "done", verdict });
-          return;
-        }
-      }
-      throw new Error("panel did not settle");
-    } catch (err) {
-      setPanel({ status: "error", error: (err as Error).message });
-    }
-  }
-
   return (
-    <Box bg={PAGE} color={FOREGROUND} minH="100vh" position="relative">
-      <Box position="absolute" top="-120px" right="-120px" w="600px" h="600px" pointerEvents="none" zIndex={0}
-        style={{ background: "radial-gradient(circle, rgba(214,255,52,0.55), transparent 70%)", filter: "blur(120px)" }} />
+    <Box bg="var(--page)" color={FOREGROUND} minH="100vh" position="relative">
+      <Box
+        position="absolute"
+        top="-120px"
+        right="-120px"
+        w="600px"
+        h="600px"
+        pointerEvents="none"
+        zIndex={0}
+        style={{ background: "radial-gradient(circle, rgba(214,255,52,0.55), transparent 70%)", filter: "blur(120px)" }}
+      />
 
       <NotchNavbar
         logo={
-          <a href="#top" className="flex items-center justify-center group">
+          <a href="/" className="flex items-center justify-center group">
             <span className="w-8 h-8 rounded-[8px] bg-[#d6ff34] flex items-center justify-center group-hover:scale-105 transition-transform">
               <LogoIcon className="w-5 h-5 text-black" />
             </span>
@@ -168,13 +132,23 @@ export default function Page() {
         }
       />
 
-      <Box id="top" className="grid-pattern" bg={PAGE} borderBottom="1px solid var(--line)" borderBottomRadius="64px" pt="128px" pb="110px" position="relative" zIndex={40} boxShadow="0 20px 50px -10px rgba(0,0,0,0.12)">
+      <Box
+        id="top"
+        className="grid-pattern"
+        bg="var(--page)"
+        borderBottom="1px solid var(--line)"
+        borderBottomRadius="64px"
+        pt="128px"
+        pb="110px"
+        position="relative"
+        zIndex={40}
+      >
         <Box maxW="1700px" mx="auto" px={6}>
           <Box textAlign="center" maxW="5xl" mx="auto" mb={14}>
             <Text as="h1" fontSize={{ base: "48px", md: "88px" }} fontWeight="700" lineHeight="0.9" letterSpacing="tight" textTransform="uppercase">
               You hate reading<br />terms of service.
             </Text>
-            <Text as="h2" fontSize={{ base: "36px", md: "88px" }} fontWeight="700" lineHeight="0.9" letterSpacing="tight" textTransform="uppercase" color={ACCENT} mt={2} mb={6}>
+            <Text as="h2" fontSize={{ base: "36px", md: "88px" }} fontWeight="700" lineHeight="0.9" letterSpacing="tight" textTransform="uppercase" mt={2} mb={6}>
               <Text as="span" bg={YELLOW} color="#000" px={3} style={{ boxDecorationBreak: "clone" }}>
                 We know.
               </Text>
@@ -187,11 +161,11 @@ export default function Page() {
           <Box maxW="4xl" mx="auto" bg={SURFACE_1} borderRadius="30px" p={{ base: 2, md: 4 }} boxShadow="0 20px 50px -10px rgba(0,0,0,0.12)">
             <Flex flexWrap="wrap" align="center" gap={2} p={4} pb={0} mb={6}>
               <Button
-                onClick={() => { setTab("paste"); fileRef.current?.click(); }}
-                bg={tab === "upload" ? SURFACE_2 : YELLOW}
-                color={tab === "upload" ? MUTED : "#000"}
+                onClick={() => { setTab("upload"); fileRef.current?.click(); }}
+                bg={tab === "upload" ? YELLOW : SURFACE_2}
+                color={tab === "upload" ? "#000" : MUTED}
                 px={6} py={3} h="auto" borderRadius="full" fontSize="13px" fontWeight="700" letterSpacing="1px" textTransform="uppercase"
-                _hover={{ bg: tab === "upload" ? SURFACE_3 : "rgba(214,255,52,0.9)" }}
+                _hover={{ bg: tab === "upload" ? "rgba(214,255,52,0.9)" : "var(--s3)" }}
               >
                 {extracting ? <Spinner size="xs" /> : "Upload PDF"}
               </Button>
@@ -200,20 +174,20 @@ export default function Page() {
                 bg={tab === "paste" ? YELLOW : SURFACE_2}
                 color={tab === "paste" ? "#000" : MUTED}
                 px={6} py={3} h="auto" borderRadius="full" fontSize="13px" fontWeight="700" letterSpacing="1px" textTransform="uppercase"
-                _hover={{ bg: tab === "paste" ? "rgba(214,255,52,0.9)" : SURFACE_3 }}
+                _hover={{ bg: tab === "paste" ? "rgba(214,255,52,0.9)" : "var(--s3)" }}
               >
-                Paste Text
+                Paste text
               </Button>
               <Button
                 onClick={() => setEmailHint(true)}
                 bg={SURFACE_2}
                 color={MUTED}
                 px={6} py={3} h="auto" borderRadius="full" fontSize="13px" fontWeight="700" letterSpacing="1px" textTransform="uppercase"
-                _hover={{ bg: SURFACE_3 }}
+                _hover={{ bg: "var(--s3)" }}
               >
                 From Email
               </Button>
-              <Text fontSize="11px" color="var(--muted)" ml="auto" display={{ base: "none", md: "block" }}>
+              <Text fontSize="11px" color={MUTED} ml="auto" display={{ base: "none", md: "block" }}>
                 {docName || "PDF, PNG, JPEG or WebP"}
               </Text>
               <input
@@ -269,7 +243,7 @@ export default function Page() {
                   px={4} py={3} h="auto" fontSize="11px" fontWeight="700" letterSpacing="1px" textTransform="uppercase"
                 >
                   {TARGETS.map((t) => (
-                    <option key={t.value} value={t.value} style={{ background: SURFACE_2 }}>
+                    <option key={t.value} value={t.value} style={{ background: "#f6f6f1" }}>
                       aim: {t.label}
                     </option>
                   ))}
@@ -292,7 +266,7 @@ export default function Page() {
                 _active={{ transform: "scale(0.98)" }}
                 _disabled={{ opacity: 0.5, cursor: "not-allowed" }}
               >
-                {busy ? <><Spinner size="sm" /> SCANNING</> : "SCAN NOW →"}
+                {busy ? <><Spinner size="sm" /> Scanning</> : "Scan now →"}
               </Button>
             </Flex>
             {error ? (
@@ -304,91 +278,7 @@ export default function Page() {
         </Box>
       </Box>
 
-      {review ? (
-        <Box ref={resultsRef} bg={SURFACE_1} borderBottomRadius="64px" pt="96px" pb="96px" position="relative" zIndex={30} boxShadow="0 20px 50px -10px rgba(0,0,0,0.12)">
-          <Box maxW="1700px" mx="auto" px={6}>
-            <Flex align="baseline" gap={4} mb={8} wrap="wrap">
-              <HStack gap={3} align="baseline">
-                <Text fontSize={{ base: "48px", md: "72px" }} fontWeight="700" lineHeight="1" color={ACCENT}>
-                  {review.before.riskScore}
-                </Text>
-                <Text fontSize="2xl" color={MUTED}>→</Text>
-                <Text fontSize={{ base: "48px", md: "72px" }} fontWeight="700" lineHeight="1" color={review.after.riskScore <= review.target ? MINT : CYAN}>
-                  {review.after.riskScore}
-                </Text>
-              </HStack>
-              <Box>
-                <Text fontSize="11px" fontWeight="700" letterSpacing="1.4px" textTransform="uppercase" color={MUTED}>
-                  Risk score after rewrite
-                </Text>
-                <Text fontSize="sm" color="var(--muted)" mt={1}>
-                  {review.fixed} of {review.before.findings.length} unfair terms removed · {factsKept} of {review.facts} numbers kept
-                </Text>
-              </Box>
-              <Button
-                ml="auto"
-                onClick={() => void checkWithPanel()}
-                disabled={panel.status === "pending"}
-                variant="outline" borderColor="var(--line-strong)" color={FOREGROUND} borderRadius="full"
-                px={5} py={2.5} h="auto" fontSize="11px" fontWeight="700" letterSpacing="1px" textTransform="uppercase"
-                _hover={{ bg: SURFACE_2 }}
-              >
-                {panel.status === "pending" ? "panel…" : "independent panel check"}
-              </Button>
-            </Flex>
-
-            {panel.status === "done" && panel.verdict ? (
-              <Box mb={6} bg={SURFACE_2} borderRadius="20px" p={4}>
-                <HStack gap={3} align="baseline">
-                  <Text fontSize="2xl" fontWeight="700" color={ACCENT}>{panel.verdict.score ?? "—"}</Text>
-                  <Text fontSize="11px" fontWeight="700" letterSpacing="1.2px" textTransform="uppercase" color={MUTED}>
-                    {panel.verdict.route} · {panel.verdict.confidence}
-                  </Text>
-                </HStack>
-                {panel.verdict.reason ? <Text fontSize="sm" color={MUTED} mt={2}>{panel.verdict.reason}</Text> : null}
-              </Box>
-            ) : null}
-
-            <Flex gap={4} direction={{ base: "column", lg: "row" }} align="stretch">
-              <ResultPanel title={`The contract · risk ${review.before.riskScore}`}>
-                <Text fontSize="13px" lineHeight="1.7" whiteSpace="pre-wrap" color="var(--fg)">{review.passes[0].text}</Text>
-              </ResultPanel>
-              <ResultPanel title={`Rewritten · risk ${finalPass?.analysis.riskScore ?? "—"}`} accent={finalPass && finalPass.analysis.riskScore <= review.target ? MINT : CYAN}>
-                <Text fontSize="13px" lineHeight="1.7" whiteSpace="pre-wrap" color="var(--fg)">{finalPass?.text}</Text>
-              </ResultPanel>
-              <ResultPanel title="What we caught">
-                <Flex direction="column" gap={2.5}>
-                  {review.before.findings.length === 0 ? (
-                    <Text fontSize="sm" color={MUTED}>No traps found in this text.</Text>
-                  ) : null}
-                  {review.before.findings.map((f) => {
-                    const stillThere = remaining.some((r) => r.id === f.id);
-                    const accent = f.severity === "critical" ? DANGER : f.severity === "high" ? YELLOW : CYAN;
-                    return (
-                      <Box key={f.id} bg={SURFACE_2} borderRadius="16px" borderLeft={`4px solid ${accent}`} p={3}>
-                        <Flex align="center" gap={2}>
-                          <Text fontSize="9px" fontWeight="700" letterSpacing="1.2px" textTransform="uppercase" color={accent}>{f.severity}</Text>
-                          <Box ml="auto" px={2} py={0.5} borderRadius="full"
-                            bg={stillThere ? "rgba(220,38,38,0.12)" : "rgba(15,122,74,0.12)"}
-                            color={stillThere ? "#b91c1c" : "#0f7a4a"}
-                            fontSize="9px" fontWeight="700" letterSpacing="1px" textTransform="uppercase">
-                            {stillThere ? "still there" : "fixed"}
-                          </Box>
-                        </Flex>
-                        <Text fontSize="12px" fontWeight="700" mt={2} lineHeight="1.35">{f.label}</Text>
-                        <Text fontSize="11px" color={MUTED} mt={1} lineHeight="1.5">{f.ask}</Text>
-                      </Box>
-                    );
-                  })}
-                  <Text fontSize="10px" color="var(--muted)">Not legal advice. These are the terms worth questioning before you sign.</Text>
-                </Flex>
-              </ResultPanel>
-            </Flex>
-          </Box>
-        </Box>
-      ) : null}
-
-      <Box bg={SURFACE_1} borderBottomRadius="64px" pt="96px" pb="96px" position="relative" zIndex={30} boxShadow="0 20px 50px -10px rgba(0,0,0,0.12)" borderBottom="1px solid rgba(0,0,0,0.5)">
+      <Box bg={SURFACE_1} borderBottomRadius="64px" pt="96px" pb="96px" position="relative" zIndex={30}>
         <Box maxW="1700px" mx="auto" px={6}>
           <Flex gap={6} direction={{ base: "column", md: "row" }}>
             <StatCard label="The Problem" value="7.2B" color={ACCENT} text="Users affected by hidden data-selling clauses daily." />
@@ -398,7 +288,7 @@ export default function Page() {
         </Box>
       </Box>
 
-      <Box bg={PAGE} borderBottomRadius="64px" pt="96px" pb="96px" position="relative" zIndex={20} boxShadow="0 20px 50px -10px rgba(0,0,0,0.12)" borderBottom="1px solid var(--line)">
+      <Box id="how" bg="var(--page)" borderBottomRadius="64px" pt="96px" pb="96px" position="relative" zIndex={20}>
         <Box maxW="1700px" mx="auto" px={6}>
           <Text as="h2" fontSize={{ base: "4xl", md: "56px" }} fontWeight="700" textTransform="uppercase" letterSpacing="tight" textAlign="center" mb={16}>
             How it works
@@ -411,7 +301,7 @@ export default function Page() {
         </Box>
       </Box>
 
-      <Box bg={SURFACE_1} borderBottomRadius="64px" pt="96px" pb="96px" position="relative" zIndex={10} boxShadow="0 20px 50px -10px rgba(0,0,0,0.12)" borderBottom="1px solid rgba(0,0,0,0.5)">
+      <Box id="catch" bg={SURFACE_1} borderBottomRadius="64px" pt="96px" pb="96px" position="relative" zIndex={10}>
         <Box maxW="1700px" mx="auto" px={6}>
           <Text as="h2" fontSize={{ base: "4xl", md: "56px" }} fontWeight="700" textTransform="uppercase" letterSpacing="tight" textAlign="center" mb={16}>
             What we catch
@@ -425,7 +315,7 @@ export default function Page() {
         </Box>
       </Box>
 
-      <Box id="about" bg={PAGE} borderBottomRadius="64px" pt="96px" pb="96px" position="relative" zIndex={9} boxShadow="0 20px 50px -10px rgba(0,0,0,0.12)" borderBottom="1px solid var(--line)">
+      <Box id="about" bg="var(--page)" borderBottomRadius="64px" pt="96px" pb="96px" position="relative" zIndex={9}>
         <Box maxW="1200px" mx="auto" px={6}>
           <Box textAlign="center" mb={16}>
             <Text fontSize="11px" fontWeight="700" textTransform="uppercase" letterSpacing="2px" color={ACCENT} mb={4}>Our Mission</Text>
@@ -451,12 +341,10 @@ export default function Page() {
                 Powered by State-of-the-Art AI
               </Text>
               <Text color={MUTED} lineHeight="1.7" mb={4}>
-                Kredpane uses Llama 3.3 70B, a large language model with deep legal and linguistic comprehension, to read every
-                clause, rate its severity, and explain what it means in plain language.
+                Kredpane uses Llama 3.3 70B, a large language model with deep legal and linguistic comprehension, to read every clause, rate its severity, and explain what it means in plain language.
               </Text>
               <Text color={MUTED} lineHeight="1.7">
-                The AI assigns each clause a severity score from 1 to 10 and categorises it into one of twelve risk categories,
-                giving you a complete picture of any ToS document in under 30 seconds.
+                The AI assigns each clause a severity score from 1 to 10 and categorises it into one of twelve risk categories, giving you a complete picture of any ToS document in under 30 seconds.
               </Text>
             </Box>
             <Flex direction="column" gap={4}>
@@ -469,7 +357,7 @@ export default function Page() {
         </Box>
       </Box>
 
-      <Box id="faq" bg={SURFACE_1} pt="96px" pb="96px" position="relative" zIndex={8}>
+      <Box id="faq" bg={SURFACE_1} pt="96px" pb="96px" position="relative" zIndex={8} borderTop="1px solid var(--line)">
         <Box maxW="3xl" mx="auto" px={6}>
           <Box textAlign="center" mb={16}>
             <Text fontSize="11px" fontWeight="700" textTransform="uppercase" letterSpacing="2px" color={ACCENT} mb={4}>Got Questions?</Text>
@@ -483,14 +371,14 @@ export default function Page() {
 
           <Flex direction="column" gap={4}>
             {FAQ.map((item, i) => (
-              <Box key={item.q} border="1px solid var(--line-strong)" borderRadius="20px" overflow="hidden" bg={SURFACE_2}>
+              <Box key={item.q} border="1px solid var(--line)" borderRadius="20px" overflow="hidden" bg={SURFACE_2}>
                 <Button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
                   w="100%" display="flex" alignItems="center" justifyContent="space-between"
                   px={8} py={6} h="auto" textAlign="left" bg="transparent" borderRadius={0}
-                  _hover={{ bg: "var(--line)" }}
+                  _hover={{ bg: "var(--s3)" }}
                 >
-                  <Text fontSize="15px" fontWeight="700" textTransform="uppercase" letterSpacing="wide" color="var(--fg)">{item.q}</Text>
+                  <Text fontSize="15px" fontWeight="700" textTransform="uppercase" letterSpacing="wide" color={FOREGROUND}>{item.q}</Text>
                   <Text color={MUTED} fontSize="sm" ml={4}>{openFaq === i ? "−" : "+"}</Text>
                 </Button>
                 {openFaq === i ? (
@@ -504,7 +392,7 @@ export default function Page() {
         </Box>
       </Box>
 
-      <Box as="footer" bg={PAGE} borderTop="1px solid var(--line)" py={16} px={6}>
+      <Box as="footer" bg="var(--page)" borderTop="1px solid var(--line)" py={16} px={6}>
         <Box maxW="1700px" mx="auto">
           <Flex direction={{ base: "column", md: "row" }} justify="space-between" gap={10} mb={12}>
             <Box maxW="xs">
@@ -547,33 +435,16 @@ function NavLink({ href, children, small }: { href: string; children: React.Reac
     <a
       href={href}
       className="kp-link"
-      style={{
-        fontSize: small ? "12px" : "12px",
-        fontWeight: 700,
-        textTransform: "uppercase",
-        letterSpacing: "0.1em",
-        color: MUTED
-      }}
+      style={{ fontSize: small ? "12px" : "12px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: MUTED }}
     >
       {children}
     </a>
   );
 }
 
-function ResultPanel({ title, accent = YELLOW, children }: { title: string; accent?: string; children: React.ReactNode }) {
-  return (
-    <Box flex="1" minW="0" bg={SURFACE_2} borderRadius="24px" overflow="hidden" border="1px solid var(--line)">
-      <Box px={4} py={3} borderBottom="1px solid var(--line)">
-        <Text fontSize="10px" fontWeight="700" letterSpacing="1.2px" textTransform="uppercase" color={accent}>{title}</Text>
-      </Box>
-      <Box p={4} maxH="420px" overflowY="auto">{children}</Box>
-    </Box>
-  );
-}
-
 function StatCard({ label, value, color, text }: { label: string; value: string; color: string; text: string }) {
   return (
-    <Box flex="1" bg={SURFACE_2} borderRadius="20px" p={8} borderTop={`4px solid ${color}`} boxShadow="0 20px 25px -5px rgba(0,0,0,0.4)">
+    <Box flex="1" bg={SURFACE_2} borderRadius="20px" p={8} borderTop={`4px solid ${color}`} boxShadow="0 20px 25px -5px rgba(0,0,0,0.06)">
       <Text fontSize="11px" fontWeight="700" textTransform="uppercase" letterSpacing="1.2px" color={MUTED} mb={4}>{label}</Text>
       <Text fontSize="5xl" fontWeight="700" color={color} mb={2} lineHeight="1">{value}</Text>
       <Text color={FOREGROUND} fontSize="lg" lineHeight="1.6">{text}</Text>
@@ -613,7 +484,7 @@ function MissionCard({ title, text, dot }: { title: string; text: string; dot: s
 
 function SpecRow({ label, value }: { label: string; value: string }) {
   return (
-    <Flex justify="space-between" align="center" px={6} py={4} bg={SURFACE_1} borderRadius="16px" border="1px solid var(--line)">
+    <Flex justify="space-between" align="center" px={6} py={4} bg={SURFACE_2} borderRadius="16px" border="1px solid var(--line)">
       <Text fontSize="12px" fontWeight="700" textTransform="uppercase" letterSpacing="wider" color={MUTED}>{label}</Text>
       <Text fontSize="13px" fontWeight="700" textTransform="uppercase" letterSpacing="wide" color={ACCENT}>{value}</Text>
     </Flex>

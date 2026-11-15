@@ -44,10 +44,6 @@ body {
   --foreground: #111111;
 }
 
-.dark {
-  --background: #0b0b0c;
-  --foreground: #ededed;
-}
 
 
 :root {
@@ -65,19 +61,5 @@ body {
   --cream-muted: rgba(0, 0, 0, 0.45);
 }
 
-.dark {
-  --page: #0b0b0c;
-  --s1: #141413;
-  --s2: #1b1b19;
-  --s3: #242421;
-  --cream: #1f1f1c;
-  --fg: #ededed;
-  --muted: rgba(255, 255, 255, 0.62);
-  --line: rgba(255, 255, 255, 0.10);
-  --line-strong: rgba(255, 255, 255, 0.18);
-  --cream-ink: #f2f2ee;
-  --cream-soft: rgba(255, 255, 255, 0.82);
-  --cream-muted: rgba(255, 255, 255, 0.45);
-}
 
 .canvas { background: var(--page); }
