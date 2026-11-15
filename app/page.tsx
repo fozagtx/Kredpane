@@ -150,6 +150,9 @@ export default function Page() {
           KRED<span>PANE</span>
         </div>
         <div className="tag">Independent underwriting for AI agents · assessed with SERV Reasoning</div>
+        <a className="navlink" href="/support">
+          support loop →
+        </a>
       </header>
 
       <main>

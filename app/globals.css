@@ -144,6 +144,61 @@ td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: top; f
 
 .badge { display: inline-block; margin-left: 10px; padding: 3px 8px; background: var(--yellow); color: var(--ink); font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; vertical-align: middle; }
 
+.navlink { margin-left: auto; font-size: 13px; font-weight: 700; color: var(--blue); text-decoration: none; border-bottom: 2px solid var(--blue); }
+.navlink:hover { color: var(--ink); border-color: var(--ink); }
+
+.sup-main { display: grid; grid-template-columns: 1fr 420px; min-height: calc(100vh - 62px); }
+@media (max-width: 980px) { .sup-main { grid-template-columns: 1fr; } }
+
+.sup-chat { padding: 24px 28px 120px; display: flex; flex-direction: column; gap: 14px; border-right: 2px solid var(--ink); }
+@media (max-width: 980px) { .sup-chat { border-right: none; border-bottom: 2px solid var(--ink); } }
+
+.sup-bubble { max-width: 78%; padding: 12px 14px; border: 1.5px solid var(--ink); }
+.sup-bubble.user { align-self: flex-end; background: var(--ink); color: #fff; }
+.sup-bubble.agent { align-self: flex-start; background: #fff; }
+.sup-meta { display: block; margin-top: 8px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); }
+.sup-bubble.user .sup-meta { color: #b9b9c2; }
+
+.sup-empty { color: var(--muted); border: 2px dashed var(--line); padding: 26px; text-align: center; }
+.sup-starters { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }
+
+.sup-chip { all: unset; border: 1.5px solid var(--ink); background: #fff; padding: 7px 10px; cursor: pointer; font-size: 13px; color: var(--ink); }
+.sup-chip:hover { background: var(--ink); color: #fff; }
+
+.sup-status { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.sup-dot { width: 9px; height: 9px; background: var(--blue); border-radius: 50%; animation: sup-pulse 1.1s infinite; }
+@keyframes sup-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+
+.sup-rail { padding: 24px 24px 90px; background: #fafafb; }
+.sup-rail h1 { font-size: 22px; letter-spacing: -0.02em; margin: 0 0 4px; }
+.sup-lede { color: var(--muted); margin: 0 0 10px; font-size: 13px; }
+
+.sup-warn { border-left: 4px solid var(--yellow); background: #fffbe6; padding: 10px 12px; font-size: 13px; margin-top: 12px; }
+.sup-err { color: var(--red); font-weight: 700; font-size: 13px; margin-top: 10px; }
+
+.sup-summary { border: 2px solid var(--ink); padding: 14px; margin-top: 18px; }
+.sup-big { display: flex; align-items: baseline; gap: 10px; }
+.sup-big b { font-size: 30px; letter-spacing: -0.02em; }
+.sup-arrow { color: var(--muted); }
+.sup-delta { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 800; font-size: 14px; padding: 2px 7px; background: var(--green); color: #fff; }
+.sup-delta.zero { background: var(--muted); }
+
+.sup-turn { border-top: 2px solid var(--ink); padding-top: 12px; margin-top: 18px; }
+.sup-q { font-weight: 600; margin-bottom: 6px; }
+.sup-score-row { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.sup-score { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 800; font-size: 20px; color: var(--muted); }
+.sup-score.pass { color: var(--green); }
+.sup-score.fail { color: var(--red); }
+.sup-critique { font-size: 13px; color: var(--muted); margin: 6px 0 0; }
+.sup-rubric { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.sup-rubric span { font-size: 11px; border: 1px solid var(--line); padding: 1px 6px; color: var(--muted); }
+
+.sup-composer { position: fixed; bottom: 0; left: 0; width: calc(100% - 420px); background: #fff; border-top: 2px solid var(--ink); padding: 12px 28px; display: flex; gap: 10px; }
+@media (max-width: 980px) { .sup-composer { width: 100%; } }
+.sup-composer input { flex: 1; padding: 11px 12px; border: 1.5px solid var(--ink); font: inherit; }
+.sup-composer input:focus { outline: 3px solid var(--blue); }
+.sup-composer button { width: auto; margin: 0; padding: 11px 18px; }
+
 .appeal { margin-top: 32px; border-top: 2px solid var(--ink); padding-top: 16px; }
 
 button.ghost { background: #fff; color: var(--ink); border: 1.5px solid var(--ink); }

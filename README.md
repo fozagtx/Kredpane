@@ -55,7 +55,18 @@ Dolphin and Kite are mapped but not wired — no keys were provisioned. Nothing 
 
 It lives outside the assessment request on purpose: Reppo verdicts are asynchronous (30–90 seconds, panel of three), so blocking an assessment on one would be dishonest about the timing. It also never overrules a deterministic finding — it reviews whether the denial is *supported* by those findings, which is the one question a checker cannot answer.
 
-Set `REPPO_API_KEY` to enable it; without the key `POST /api/second-opinion` returns 503 and the button reports that plainly.
+Set `REPPO_API_KEY` to enable it; without the key `POST /api/second-opinion` returns 503 and the button reports that missing key.
+
+## Support loop (`/support`)
+
+A second surface in the same app. A customer-support agent whose reply is scored, then rewritten against that score.
+
+1. **Draft.** The baseline agent runs on SERV (`gpt-5.4`) under a deliberately thin prompt — two sentences, no diagnosis, no commitments. That is the "before".
+2. **Score.** Customer message plus reply go to Reppo as `taskType: "response"`.
+3. **Rewrite, if needed.** When the route is not `ship` or the score is under 80, SERV rewrites the reply with a hard constraint built from the score, the route, the panel's critique, and the rubric.
+4. **Re-score.** Both attempts land in the ledger with their scores, routes and critique, plus a mean before/after across the conversation.
+
+Reppo evaluations are queued and take 30–90 seconds, so the UI shows a live scoring state rather than pretending the loop is instant. Needs `REPPO_API_KEY`; without it the agent still answers but nothing is scored and the loop never triggers.
 
 ## Run
 
