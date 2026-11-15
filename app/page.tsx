@@ -17,13 +17,12 @@ function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-export default function SupportPage() {
+export default function Page() {
   const [messages, setMessages] = useState<SupportMessage[]>([]);
   const [turns, setTurns] = useState<SupportTurn[]>([]);
   const [input, setInput] = useState<string>("");
   const [busy, setBusy] = useState<boolean>(false);
   const [phase, setPhase] = useState<string>("");
-  const [elapsed, setElapsed] = useState<number>(0);
   const [error, setError] = useState<string>("");
   const [keys, setKeys] = useState<{ serv: boolean; reppo: boolean }>({ serv: true, reppo: true });
   const endRef = useRef<HTMLDivElement>(null);
@@ -39,11 +38,13 @@ export default function SupportPage() {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, phase]);
 
-  useEffect(() => {
-    if (!busy) return;
-    const t = setInterval(() => setElapsed((e) => e + 1), 1000);
-    return () => clearInterval(t);
-  }, [busy]);
+  function patchTurn(index: number, fn: (t: SupportTurn) => SupportTurn): void {
+    setTurns((prev) => prev.map((t, i) => (i === index ? fn(t) : t)));
+  }
+
+  function patchAttempt(turnIndex: number, n: number, fn: (a: SupportTurn["attempts"][number]) => SupportTurn["attempts"][number]): void {
+    patchTurn(turnIndex, (t) => ({ ...t, attempts: t.attempts.map((a) => (a.n === n ? fn(a) : a)) }));
+  }
 
   async function draft(history: SupportMessage[], feedback?: { score: number; route: string; reason: string; rubric: Record<string, number> }) {
     const res = await fetch("/api/reply", {
@@ -56,7 +57,7 @@ export default function SupportPage() {
     return { reply: data.reply, constraint: data.constraint ?? null };
   }
 
-  async function evaluate(userMessage: string, reply: string): Promise<ReppoVerdict> {
+  async function evaluate(userMessage: string, reply: string, turnIndex: number, attempt: number): Promise<ReppoVerdict> {
     const res = await fetch("/api/evaluate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -65,15 +66,21 @@ export default function SupportPage() {
     const data = (await res.json()) as { id?: string; error?: string };
     if (!res.ok || !data.id) throw new Error(data.error || "could not submit for scoring");
 
-    const deadline = Date.now() + 180_000;
+    const id = data.id;
+    patchAttempt(turnIndex, attempt, (a) => ({ ...a, evalId: id, status: "scoring", elapsed: 0 }));
+
+    const deadline = Date.now() + 240_000;
+    let elapsed = 0;
     while (Date.now() < deadline) {
       await sleep(4000);
-      const poll = await fetch(`/api/evaluate?id=${data.id}`);
+      elapsed += 4;
+      patchAttempt(turnIndex, attempt, (a) => ({ ...a, elapsed }));
+      const poll = await fetch(`/api/evaluate?id=${id}`);
       const verdict = (await poll.json()) as ReppoVerdict & { error?: string };
       if (!poll.ok) throw new Error(verdict.error || "poll failed");
       if (verdict.status === "COMPLETED" || verdict.status === "FAILED") return verdict;
     }
-    throw new Error("the panel did not settle within 3 minutes");
+    throw new Error("the panel did not settle within 4 minutes");
   }
 
   async function send(text: string): Promise<void> {
@@ -81,66 +88,71 @@ export default function SupportPage() {
     if (!userMessage || busy) return;
     setError("");
     setBusy(true);
-    setElapsed(0);
     setInput("");
 
     const history: SupportMessage[] = [...messages, { role: "user", content: userMessage }];
     setMessages(history);
 
-    const turn: SupportTurn = { user: userMessage, attempts: [], before: null, after: null };
+    const turnIndex = turns.length;
+    setTurns((prev) => [...prev, { user: userMessage, attempts: [], before: null, after: null }]);
 
     try {
       setPhase("drafting first reply");
       const first = await draft(history);
-      turn.attempts.push({ n: 1, reply: first.reply, score: null, route: null, reason: null, rubric: {}, constraint: null });
       setMessages([...history, { role: "assistant", content: first.reply }]);
+      patchTurn(turnIndex, (t) => ({
+        ...t,
+        attempts: [
+          { n: 1, reply: first.reply, score: null, route: null, reason: null, rubric: {}, constraint: null, status: "drafting", elapsed: 0, evalId: null }
+        ]
+      }));
 
-      if (!keys.reppo) {
-        setTurns((t) => [...t, turn]);
-        return;
-      }
+      if (!keys.reppo) return;
 
-      setPhase("waiting for the evaluation panel");
-      const v1 = await evaluate(userMessage, first.reply);
-      turn.attempts[0].score = v1.score;
-      turn.attempts[0].route = v1.route;
-      turn.attempts[0].reason = v1.reason;
-      turn.attempts[0].rubric = v1.rubric;
-      turn.before = v1.score;
-      turn.after = v1.score;
+      setPhase("submitting to the evaluation panel");
+      const v1 = await evaluate(userMessage, first.reply, turnIndex, 1);
+      patchAttempt(turnIndex, 1, (a) => ({
+        ...a,
+        status: v1.status === "FAILED" ? "failed" : "done",
+        score: v1.score,
+        route: v1.route,
+        reason: v1.reason ?? v1.error ?? null,
+        rubric: v1.rubric,
+        error: v1.error
+      }));
+      patchTurn(turnIndex, (t) => ({ ...t, before: v1.score, after: v1.score }));
 
       if (v1.status !== "FAILED" && v1.score !== null && !accepted(v1.score, v1.route)) {
-        setPhase("rewriting against the score");
+        setPhase(`rewriting against ${v1.score}/100`);
         const second = await draft(history, {
           score: v1.score,
           route: v1.route ?? "review",
           reason: v1.reason ?? "",
           rubric: v1.rubric
         });
-        turn.attempts.push({
-          n: 2,
-          reply: second.reply,
-          score: null,
-          route: null,
-          reason: null,
-          rubric: {},
-          constraint: second.constraint
-        });
         setMessages([...history, { role: "assistant", content: second.reply }]);
+        patchTurn(turnIndex, (t) => ({
+          ...t,
+          attempts: [
+            ...t.attempts,
+            { n: 2, reply: second.reply, score: null, route: null, reason: null, rubric: {}, constraint: second.constraint, status: "drafting", elapsed: 0, evalId: null }
+          ]
+        }));
 
-        setPhase("re-scoring the rewrite");
-        const v2 = await evaluate(userMessage, second.reply);
-        turn.attempts[1].score = v2.score;
-        turn.attempts[1].route = v2.route;
-        turn.attempts[1].reason = v2.reason;
-        turn.attempts[1].rubric = v2.rubric;
-        turn.after = v2.score ?? v1.score;
+        const v2 = await evaluate(userMessage, second.reply, turnIndex, 2);
+        patchAttempt(turnIndex, 2, (a) => ({
+          ...a,
+          status: v2.status === "FAILED" ? "failed" : "done",
+          score: v2.score,
+          route: v2.route,
+          reason: v2.reason ?? v2.error ?? null,
+          rubric: v2.rubric,
+          error: v2.error
+        }));
+        patchTurn(turnIndex, (t) => ({ ...t, after: v2.score ?? v1.score }));
       }
-
-      setTurns((t) => [...t, turn]);
     } catch (err) {
       setError((err as Error).message);
-      setTurns((t) => [...t, turn]);
     } finally {
       setPhase("");
       setBusy(false);
@@ -153,6 +165,7 @@ export default function SupportPage() {
   }
 
   const stats = summarise(turns);
+  const scoring = turns.flatMap((t) => t.attempts).find((a) => a.status === "scoring");
 
   return (
     <>
@@ -188,7 +201,8 @@ export default function SupportPage() {
           {busy ? (
             <div className="sup-status">
               <span className="sup-dot" />
-              {phase || "working"} · {elapsed}s
+              {phase || "working"}
+              {scoring ? ` · ${scoring.elapsed}s` : ""}
             </div>
           ) : null}
           {error ? <div className="sup-err">{error}</div> : null}
@@ -220,6 +234,7 @@ export default function SupportPage() {
           {turns.map((t, i) => (
             <div className="sup-turn" key={i}>
               <div className="sup-q">{t.user}</div>
+              {t.attempts.length === 0 ? <p className="sup-critique">drafting…</p> : null}
               {t.attempts.map((a) => (
                 <div key={a.n}>
                   <div className="sup-score-row">
@@ -228,7 +243,15 @@ export default function SupportPage() {
                     <span className="sup-lede" style={{ margin: 0 }}>
                       attempt {a.n}
                     </span>
+                    {a.status === "scoring" ? (
+                      <span className="sup-scoring">
+                        <span className="sup-dot" />
+                        judging · {a.elapsed}s
+                      </span>
+                    ) : null}
+                    {a.status === "failed" ? <span className="sup-scoring">failed</span> : null}
                   </div>
+                  {a.evalId ? <p className="sup-id">eval {a.evalId}</p> : null}
                   {a.reason ? <p className="sup-critique">{a.reason}</p> : null}
                   {Object.keys(a.rubric).length > 0 ? (
                     <div className="sup-rubric">

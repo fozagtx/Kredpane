@@ -15,6 +15,10 @@ export interface SupportAttempt {
   reason: string | null;
   rubric: Record<string, number>;
   constraint: string | null;
+  status: "drafting" | "scoring" | "done" | "failed";
+  elapsed: number;
+  evalId: string | null;
+  error?: string;
 }
 
 export interface SupportTurn {
