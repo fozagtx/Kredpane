@@ -71,6 +71,10 @@ The score moves, and the numbers survive — that is the whole claim. Results va
 
 **Dolphin and Kite are not used.** No code, keys or config for either.
 
+## Demo film
+
+`demo/` is a HyperFrames composition, 60 s at 1920x1080. It is cut from the real walkthrough recording plus a capture of the email modal, narrated by Kokoro (`af_heart`, 53.4 s), with synthesised UI sound on each cut, click and copy. Render with `cd demo && npx hyperframes render`; output lands in `demo/renders/`.
+
 ## Run
 
 ```bash
