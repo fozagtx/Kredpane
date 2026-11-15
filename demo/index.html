@@ -45,6 +45,10 @@
         font-family: var(--font-mono); font-size: 20px; font-weight: 500; letter-spacing: 0.15em;
         text-transform: uppercase; color: var(--muted);
       }
+      .end .stack {
+        font-family: var(--font-mono); font-size: 16px; font-weight: 500; letter-spacing: 0.15em;
+        text-transform: uppercase; color: #3d5500;
+      }
       .end .cta {
         margin-top: 10px; font-family: var(--font-mono); font-size: 19px; font-weight: 500; letter-spacing: 0.14em;
         text-transform: uppercase; color: var(--ink); border-bottom: 1px solid var(--hair); padding-bottom: 8px;
@@ -115,13 +119,14 @@
             </div>
             <div id="word" class="word">Kredpane</div>
             <div id="url" class="url">kredpane.vercel.app</div>
+            <div id="stack" class="stack">SERV Reasoning · Reppo</div>
             <div id="cta" class="cta">Read it before you sign</div>
           </div>
         </div>
       </section>
 
       <audio id="bed" src="assets/music.m4a" data-start="0.6" data-duration="79.4"></audio>
-      <audio id="vo" src="assets/vo.wav" data-start="1.5" data-duration="75.73"></audio>
+      <audio id="vo" src="assets/vo.wav" data-start="1.5" data-duration="74.71"></audio>
       <audio id="w1" src="assets/sfx-whoosh.wav" data-start="9.6" data-duration="0.4"></audio>
       <audio id="w2" src="assets/sfx-whoosh.wav" data-start="19.6" data-duration="0.4"></audio>
       <audio id="w3" src="assets/sfx-whoosh.wav" data-start="32" data-duration="0.4"></audio>
@@ -150,17 +155,18 @@
         tl.set(`${sel} .inner`, { opacity: 0 }, start + dur - 0.02);
       });
 
-      tl.fromTo("#eyebrow", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 0.15);
-      tl.fromTo("#h1", { opacity: 0, filter: "blur(8px)", y: 16 }, { opacity: 1, filter: "blur(0px)", y: 0, duration: 0.45, ease: "power4.out" }, 0.3);
-      tl.fromTo("#h2", { opacity: 0, filter: "blur(8px)", y: 16 }, { opacity: 1, filter: "blur(0px)", y: 0, duration: 0.4, ease: "power4.out" }, 3.55);
-      tl.fromTo("#h3", { opacity: 0, filter: "blur(8px)", y: 16 }, { opacity: 1, filter: "blur(0px)", y: 0, duration: 0.4, ease: "power4.out" }, 6.95);
+      tl.fromTo("#eyebrow", { y: 6 }, { y: 0, duration: 0.3, ease: "power3.out" }, 0);
+      tl.fromTo("#h1", { filter: "blur(6px)", y: 8 }, { filter: "blur(0px)", y: 0, duration: 0.4, ease: "power3.out" }, 0);
+      tl.fromTo("#h2", { filter: "blur(6px)", y: 8 }, { filter: "blur(0px)", y: 0, duration: 0.35, ease: "power3.out" }, 3.42);
+      tl.fromTo("#h3", { filter: "blur(6px)", y: 8 }, { filter: "blur(0px)", y: 0, duration: 0.35, ease: "power3.out" }, 6.82);
 
       tl.fromTo("#mailimg", { scale: 1.0 }, { scale: 1.05, duration: 15.5, ease: "none" }, 54.2);
 
       tl.fromTo("#mark", { scale: 0.4, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.45, ease: "power3.out" }, 70.4);
       tl.fromTo("#word", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 70.7);
       tl.fromTo("#url", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power2.out" }, 71.2);
-      tl.fromTo("#cta", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 71.7);
+      tl.fromTo("#stack", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power2.out" }, 71.5);
+      tl.fromTo("#cta", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 71.9);
 
       window.__timelines["main"] = tl;
       tl.seek(0);
