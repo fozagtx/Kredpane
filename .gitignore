@@ -10,3 +10,6 @@ out/
 next-env.d.ts
 tsconfig.tsbuildinfo
 .vercel
+
+# source screen recording
+/result.mp4
