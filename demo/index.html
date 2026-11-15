@@ -13,7 +13,6 @@
         --ground: #f3f3ef;
         --ink: #111111;
         --muted: #5b5b5b;
-        --subtle: #8a8a86;
         --hair: rgba(25, 25, 25, 0.12);
         --lime: #d6ff34;
         --font-display: "Instrument Serif";
@@ -34,16 +33,10 @@
       }
       .hook-eyebrow i { display: block; width: 34px; height: 1px; background: currentColor; font-style: normal; }
       .hook-title {
-        font-family: var(--font-display); font-weight: 400; font-size: 108px; line-height: 1.02;
+        font-family: var(--font-display); font-weight: 400; font-size: 112px; line-height: 1.02;
         letter-spacing: -0.028em; color: var(--ink); max-width: 1500px;
       }
-      .items { margin-top: 44px; display: flex; flex-direction: column; gap: 18px; }
-      .item { display: flex; align-items: baseline; gap: 22px; }
-      .item .num {
-        font-family: var(--font-mono); font-size: 20px; font-weight: 500; letter-spacing: 0.14em;
-        color: var(--ink); background: var(--lime); padding: 4px 12px;
-      }
-      .item p { font-family: var(--font-ui); font-size: 34px; font-weight: 400; color: var(--ink); letter-spacing: -0.01em; }
+      .stat { color: var(--ink); }
 
       .end { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 22px; }
       .end .mark { width: 92px; height: 92px; border-radius: 20px; background: var(--lime); display: grid; place-items: center; }
@@ -61,29 +54,40 @@
   <body>
     <div id="root" data-composition-id="main" data-start="0" data-duration="80" data-width="1920" data-height="1080">
 
-      <section id="hook" class="scene clip" data-start="0" data-duration="8" data-track-index="0">
+      <section id="hook1" class="scene clip" data-start="0" data-duration="3.4" data-track-index="0">
         <div class="inner">
           <div class="hook">
-            <div id="eyebrow" class="hook-eyebrow"><i></i>Contract review</div>
-            <h1 id="h1" class="hook-title">Three things happen when you sign something you did not read.</h1>
-            <div class="items">
-              <div id="i1" class="item"><span class="num">01</span><p>You agree to the version they can change later.</p></div>
-              <div id="i2" class="item"><span class="num">02</span><p>You give up the right to sue.</p></div>
-              <div id="i3" class="item"><span class="num">03</span><p>You pay to leave.</p></div>
-            </div>
+            <div id="eyebrow" class="hook-eyebrow"><i></i>The shift</div>
+            <h1 id="h1" class="hook-title">In 2017, researchers built a fake social network.</h1>
           </div>
         </div>
       </section>
 
-      <section id="s1" class="scene clip" data-start="8" data-duration="10" data-track-index="1">
+      <section id="hook2" class="scene clip" data-start="3.4" data-duration="3.4" data-track-index="0">
         <div class="inner">
-          <video id="v1" class="clip" data-start="8" data-duration="10" src="assets/video/part1.mp4" muted playsinline preload="auto"></video>
+          <div class="hook">
+            <h1 id="h2" class="hook-title">Buried in the terms: your firstborn child.</h1>
+          </div>
         </div>
       </section>
 
-      <section id="s2" class="scene clip" data-start="18" data-duration="14" data-track-index="2">
+      <section id="hook3" class="scene clip" data-start="6.8" data-duration="2.8" data-track-index="0">
         <div class="inner">
-          <video id="v2" class="clip" data-start="18" data-duration="14" src="assets/video/part2.mp4" muted playsinline preload="auto"></video>
+          <div class="hook">
+            <h1 id="h3" class="hook-title">98% of people clicked agree.</h1>
+          </div>
+        </div>
+      </section>
+
+      <section id="s1" class="scene clip" data-start="9.6" data-duration="10" data-track-index="1">
+        <div class="inner">
+          <video id="v1" class="clip" data-start="9.6" data-duration="10" src="assets/video/part1.mp4" muted playsinline preload="auto"></video>
+        </div>
+      </section>
+
+      <section id="s2" class="scene clip" data-start="19.6" data-duration="12.4" data-track-index="2">
+        <div class="inner">
+          <video id="v2" class="clip" data-start="19.6" data-duration="12.4" src="assets/video/part2.mp4" muted playsinline preload="auto"></video>
         </div>
       </section>
 
@@ -111,19 +115,19 @@
             </div>
             <div id="word" class="word">Kredpane</div>
             <div id="url" class="url">kredpane.vercel.app</div>
-            <div id="cta" class="cta">Before you sign the next one</div>
+            <div id="cta" class="cta">Read it before you sign</div>
           </div>
         </div>
       </section>
 
       <audio id="bed" src="assets/music.m4a" data-start="0.6" data-duration="79.4"></audio>
-      <audio id="vo" src="assets/vo.wav" data-start="2" data-duration="73.15"></audio>
-      <audio id="w1" src="assets/sfx-whoosh.wav" data-start="8" data-duration="0.4"></audio>
-      <audio id="w2" src="assets/sfx-whoosh.wav" data-start="18" data-duration="0.4"></audio>
+      <audio id="vo" src="assets/vo.wav" data-start="1.5" data-duration="75.73"></audio>
+      <audio id="w1" src="assets/sfx-whoosh.wav" data-start="9.6" data-duration="0.4"></audio>
+      <audio id="w2" src="assets/sfx-whoosh.wav" data-start="19.6" data-duration="0.4"></audio>
       <audio id="w3" src="assets/sfx-whoosh.wav" data-start="32" data-duration="0.4"></audio>
       <audio id="w4" src="assets/sfx-whoosh.wav" data-start="54" data-duration="0.4"></audio>
       <audio id="w5" src="assets/sfx-whoosh.wav" data-start="70" data-duration="0.4"></audio>
-      <audio id="click1" src="assets/sfx-click.wav" data-start="27.7" data-duration="0.2"></audio>
+      <audio id="click1" src="assets/sfx-click.wav" data-start="29.3" data-duration="0.2"></audio>
       <audio id="chime1" src="assets/sfx-chime.wav" data-start="56.2" data-duration="0.32"></audio>
     </div>
 
@@ -131,9 +135,11 @@
       const tl = gsap.timeline({ paused: true });
 
       const scenes = [
-        ["#hook", 0, 8],
-        ["#s1", 8, 10],
-        ["#s2", 18, 14],
+        ["#hook1", 0, 3.4],
+        ["#hook2", 3.4, 3.4],
+        ["#hook3", 6.8, 2.8],
+        ["#s1", 9.6, 10],
+        ["#s2", 19.6, 12.4],
         ["#s3", 32, 22],
         ["#mail", 54, 16],
         ["#endcard", 70, 10]
@@ -144,11 +150,10 @@
         tl.set(`${sel} .inner`, { opacity: 0 }, start + dur - 0.02);
       });
 
-      tl.fromTo("#eyebrow", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, 0.2);
-      tl.fromTo("#h1", { opacity: 0, filter: "blur(8px)", y: 18 }, { opacity: 1, filter: "blur(0px)", y: 0, duration: 0.55, ease: "power4.out" }, 0.5);
-      tl.fromTo("#i1", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, 2.15);
-      tl.fromTo("#i2", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, 3.45);
-      tl.fromTo("#i3", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, 4.65);
+      tl.fromTo("#eyebrow", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 0.15);
+      tl.fromTo("#h1", { opacity: 0, filter: "blur(8px)", y: 16 }, { opacity: 1, filter: "blur(0px)", y: 0, duration: 0.45, ease: "power4.out" }, 0.3);
+      tl.fromTo("#h2", { opacity: 0, filter: "blur(8px)", y: 16 }, { opacity: 1, filter: "blur(0px)", y: 0, duration: 0.4, ease: "power4.out" }, 3.55);
+      tl.fromTo("#h3", { opacity: 0, filter: "blur(8px)", y: 16 }, { opacity: 1, filter: "blur(0px)", y: 0, duration: 0.4, ease: "power4.out" }, 6.95);
 
       tl.fromTo("#mailimg", { scale: 1.0 }, { scale: 1.05, duration: 15.5, ease: "none" }, 54.2);
 
