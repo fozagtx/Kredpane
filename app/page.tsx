@@ -8,9 +8,10 @@ import { NotchNavbar } from "../components/ui/notch-navbar";
 import LogoIcon from "../assets/logo/logo-icon";
 
 const YELLOW = "#d6ff34";
-const SURFACE_1 = "#f7f7f3";
-const SURFACE_2 = "#f0f0ea";
-const SURFACE_3 = "#e7e7df";
+const PAGE = "#f3f3ef";
+const SURFACE_1 = "#ffffff";
+const SURFACE_2 = "#f6f6f1";
+const SURFACE_3 = "#eaeae3";
 const MUTED = "rgba(0,0,0,0.62)";
 const FOREGROUND = "#111111";
 const ACCENT = "#3d5500";
@@ -153,7 +154,7 @@ export default function Page() {
   }
 
   return (
-    <Box bg="#fff" color={FOREGROUND} minH="100vh" position="relative">
+    <Box bg={PAGE} color={FOREGROUND} minH="100vh" position="relative">
       <Box position="absolute" top="-120px" right="-120px" w="600px" h="600px" pointerEvents="none" zIndex={0}
         style={{ background: "radial-gradient(circle, rgba(214,255,52,0.55), transparent 70%)", filter: "blur(120px)" }} />
 
@@ -167,7 +168,7 @@ export default function Page() {
         }
       />
 
-      <Box id="top" className="grid-pattern" bg="#fff" borderBottom="1px solid rgba(0,0,0,0.08)" borderBottomRadius="120px" pt="128px" pb="170px" position="relative" zIndex={40} boxShadow="0 20px 50px -10px rgba(0,0,0,0.12)">
+      <Box id="top" className="grid-pattern" bg={PAGE} borderBottom="1px solid rgba(0,0,0,0.08)" borderBottomRadius="120px" pt="128px" pb="170px" position="relative" zIndex={40} boxShadow="0 20px 50px -10px rgba(0,0,0,0.12)">
         <Box maxW="1700px" mx="auto" px={6}>
           <Box textAlign="center" maxW="5xl" mx="auto" mb={14}>
             <Text as="h1" fontSize={{ base: "48px", md: "88px" }} fontWeight="700" lineHeight="0.9" letterSpacing="tight" textTransform="uppercase">
@@ -397,7 +398,7 @@ export default function Page() {
         </Box>
       </Box>
 
-      <Box bg="#fff" borderBottomRadius="120px" pt="200px" pb="170px" mt="-120px" position="relative" zIndex={20} boxShadow="0 20px 50px -10px rgba(0,0,0,0.12)" borderBottom="1px solid rgba(0,0,0,0.08)">
+      <Box bg={PAGE} borderBottomRadius="120px" pt="200px" pb="170px" mt="-120px" position="relative" zIndex={20} boxShadow="0 20px 50px -10px rgba(0,0,0,0.12)" borderBottom="1px solid rgba(0,0,0,0.08)">
         <Box maxW="1700px" mx="auto" px={6}>
           <Text as="h2" fontSize={{ base: "4xl", md: "56px" }} fontWeight="700" textTransform="uppercase" letterSpacing="tight" textAlign="center" mb={16}>
             How it works
@@ -424,7 +425,7 @@ export default function Page() {
         </Box>
       </Box>
 
-      <Box id="about" bg="#fff" borderBottomRadius="120px" pt="200px" pb="170px" mt="-120px" position="relative" zIndex={9} boxShadow="0 20px 50px -10px rgba(0,0,0,0.12)" borderBottom="1px solid rgba(0,0,0,0.08)">
+      <Box id="about" bg={PAGE} borderBottomRadius="120px" pt="200px" pb="170px" mt="-120px" position="relative" zIndex={9} boxShadow="0 20px 50px -10px rgba(0,0,0,0.12)" borderBottom="1px solid rgba(0,0,0,0.08)">
         <Box maxW="1200px" mx="auto" px={6}>
           <Box textAlign="center" mb={16}>
             <Text fontSize="11px" fontWeight="700" textTransform="uppercase" letterSpacing="2px" color={ACCENT} mb={4}>Our Mission</Text>
@@ -503,7 +504,7 @@ export default function Page() {
         </Box>
       </Box>
 
-      <Box as="footer" bg="#fff" borderTop="1px solid rgba(0,0,0,0.08)" py={16} px={6}>
+      <Box as="footer" bg={PAGE} borderTop="1px solid rgba(0,0,0,0.08)" py={16} px={6}>
         <Box maxW="1700px" mx="auto">
           <Flex direction={{ base: "column", md: "row" }} justify="space-between" gap={10} mb={12}>
             <Box maxW="xs">
