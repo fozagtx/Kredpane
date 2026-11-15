@@ -1,0 +1,32 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap");
+
+:root { color-scheme: dark; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #000;
+  color: #ededed;
+  font-family: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #1d1e19; border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: #292a2d; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.45); }
+
+.grid-pattern {
+  background-image: repeating-linear-gradient(45deg, #ffffff0a 0, #ffffff0a 1px, transparent 1px, transparent 40px);
+}
+
+@keyframes pulse-dot-anim {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.4); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.pulse-dot { animation: pulse-dot-anim 2s infinite; }
+
+.kp-link:hover { color: #fff; }

@@ -1,4 +1,4 @@
-import { improve } from "../../../lib/instructions";
+import { reviewContract } from "../../../lib/contract";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
@@ -12,12 +12,12 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   const text = typeof body.text === "string" ? body.text.trim() : "";
-  const target = Number(body.target ?? 6.5);
-  if (!text || text.length < 40) return Response.json({ error: "source text is too short" }, { status: 400 });
-  if (!(target >= 3 && target <= 12)) return Response.json({ error: "target must be between 3 and 12" }, { status: 400 });
+  const target = Number(body.target ?? 25);
+  if (!text || text.length < 60) return Response.json({ error: "paste a fuller contract first" }, { status: 400 });
+  if (!(target >= 0 && target <= 60)) return Response.json({ error: "target must be between 0 and 60" }, { status: 400 });
 
   try {
-    return Response.json(await improve(text, target));
+    return Response.json(await reviewContract(text, target));
   } catch (err) {
     return Response.json({ error: (err as Error).message }, { status: 502 });
   }

@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import "./globals.css";
 import { Provider } from "./providers";
 
 export const metadata: Metadata = {
-  title: "Kredpane — instructions rewritten to a reading target",
-  description: "Hospital instructions rewritten to a grade level, with every dose, time and phone number verified as intact."
+  title: "Kredpane — read the contract before you sign it",
+  description: "Finds the unfair terms in a consumer contract, scores the risk, and rewrites them."
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark" suppressHydrationWarning>
       <body>
         <Provider>{children}</Provider>
       </body>
