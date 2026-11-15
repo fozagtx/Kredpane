@@ -110,7 +110,7 @@ export default function Page() {
   }
 
   return (
-    <Box bg="var(--page)" color={FOREGROUND} minH="100vh" position="relative">
+    <Box bg="var(--page)" color="#111111" minH="100vh" position="relative">
       <Box
         position="absolute"
         top="-120px"
@@ -210,7 +210,7 @@ export default function Page() {
                   onChange={(e) => setCompany(e.target.value)}
                   placeholder="COMPANY NAME (OPTIONAL)"
                   w="100%" bg={SURFACE_2} border="1px solid var(--line)" borderRadius="12px" px={6} py={4}
-                  h="auto" fontSize="sm" fontWeight="700" letterSpacing="wider" textTransform="uppercase" color={FOREGROUND}
+                  h="auto" fontSize="sm" fontWeight="700" letterSpacing="wider" textTransform="uppercase" color="#111111"
                   _placeholder={{ color: MUTED }}
                   _focusVisible={{ outline: "none", borderColor: "rgba(61,85,0,0.6)" }}
                 />
@@ -222,7 +222,7 @@ export default function Page() {
                   spellCheck={false}
                   placeholder="Paste the Terms of Service, Privacy Policy, or contract here..."
                   w="100%" h="100%" bg={SURFACE_2} border="1px solid var(--line)" borderRadius="20px" p={6}
-                  fontSize="md" color={FOREGROUND} resize="none"
+                  fontSize="md" color="#111111" resize="none"
                   _placeholder={{ color: MUTED }}
                   _focusVisible={{ outline: "none", borderColor: "rgba(61,85,0,0.6)" }}
                 />
@@ -239,7 +239,7 @@ export default function Page() {
                 <NativeSelect.Field
                   value={target}
                   onChange={(e) => setTarget(e.target.value)}
-                  bg={SURFACE_2} color={FOREGROUND} border="1px solid var(--line-strong)" borderRadius="full"
+                  bg={SURFACE_2} color="#111111" border="1px solid var(--line-strong)" borderRadius="full"
                   px={4} py={3} h="auto" fontSize="11px" fontWeight="700" letterSpacing="1px" textTransform="uppercase"
                 >
                   {TARGETS.map((t) => (
@@ -378,7 +378,7 @@ export default function Page() {
                   px={8} py={6} h="auto" textAlign="left" bg="transparent" borderRadius={0}
                   _hover={{ bg: "var(--s3)" }}
                 >
-                  <Text fontSize="15px" fontWeight="700" textTransform="uppercase" letterSpacing="wide" color={FOREGROUND}>{item.q}</Text>
+                  <Text fontSize="15px" fontWeight="700" textTransform="uppercase" letterSpacing="wide" color="#111111">{item.q}</Text>
                   <Text color={MUTED} fontSize="sm" ml={4}>{openFaq === i ? "−" : "+"}</Text>
                 </Button>
                 {openFaq === i ? (
@@ -447,7 +447,7 @@ function StatCard({ label, value, color, text }: { label: string; value: string;
     <Box flex="1" bg={SURFACE_2} borderRadius="20px" p={8} borderTop={`4px solid ${color}`} boxShadow="0 20px 25px -5px rgba(0,0,0,0.06)">
       <Text fontSize="11px" fontWeight="700" textTransform="uppercase" letterSpacing="1.2px" color={MUTED} mb={4}>{label}</Text>
       <Text fontSize="5xl" fontWeight="700" color={color} mb={2} lineHeight="1">{value}</Text>
-      <Text color={FOREGROUND} fontSize="lg" lineHeight="1.6">{text}</Text>
+      <Text color="#111111" fontSize="lg" lineHeight="1.6">{text}</Text>
     </Box>
   );
 }

@@ -6,8 +6,9 @@ import { cn } from "@/lib/utils";
 export function NotchNavbar({
   className,
   logo,
+  showNav = true,
   ...props
-}: React.HTMLAttributes<HTMLElement> & { logo?: React.ReactNode }) {
+}: React.HTMLAttributes<HTMLElement> & { logo?: React.ReactNode; showNav?: boolean }) {
   return (
     <header className={cn("fixed top-0 inset-x-0 z-50 h-16 flex px-0", className)} {...props}>
       <div className="canvas flex-1 h-10 z-20 relative min-w-0">
@@ -34,14 +35,35 @@ export function NotchNavbar({
             </svg>
           </div>
 
-          <div className="relative w-full h-full flex items-center justify-center px-6">
-            <div className="flex items-center justify-center mt-1">
+          <div className="relative w-full h-full flex items-center gap-8 px-5 md:px-7">
+            <div className="flex items-center gap-2.5 shrink-0">
               {logo || (
                 <Link href="/" className="flex items-center justify-center">
                   <span className="w-7 h-7 bg-[#d6ff34] rounded-[7px]" />
                 </Link>
               )}
+              <span className="text-[13px] font-bold uppercase tracking-[0.22em] text-[color:var(--fg)] whitespace-nowrap">
+                Kredpane
+              </span>
             </div>
+
+            {showNav ? (
+              <>
+                <a
+                  href="#how"
+                  className="hidden md:block text-[11px] font-bold uppercase tracking-[0.16em] text-[color:var(--muted)] hover:text-[color:var(--fg)] transition-colors whitespace-nowrap"
+                >
+                  How it works
+                </a>
+
+                <a
+                  href="#top"
+                  className="ml-auto px-4 py-1.5 rounded-full bg-[#d6ff34] text-black text-[11px] font-bold uppercase tracking-[0.14em] hover:bg-[#c9f22b] transition-colors whitespace-nowrap"
+                >
+                  Scan now
+                </a>
+              </>
+            ) : null}
           </div>
         </div>
 

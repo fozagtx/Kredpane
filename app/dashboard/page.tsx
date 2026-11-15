@@ -85,6 +85,7 @@ export default function DashboardPage() {
   return (
     <Box bg="var(--page)" color={FOREGROUND} minH="100vh">
       <NotchNavbar
+        showNav={false}
         logo={
           <a href="/" className="flex items-center justify-center group">
             <span className="w-8 h-8 rounded-[8px] bg-[#d6ff34] flex items-center justify-center group-hover:scale-105 transition-transform">
@@ -155,13 +156,13 @@ export default function DashboardPage() {
 
         <Flex gap={4} direction={{ base: "column", lg: "row" }} align="stretch">
           <ResultPanel title={`The contract · risk ${review.before.riskScore}`}>
-            <Text fontSize="13px" lineHeight="1.7" whiteSpace="pre-wrap" color={FOREGROUND}>
+            <Text fontSize="13px" lineHeight="1.7" whiteSpace="pre-wrap" color="#111111">
               {review.passes[0].text}
             </Text>
           </ResultPanel>
 
           <ResultPanel title={`Rewritten · risk ${finalPass.analysis.riskScore}`} accent={finalPass.analysis.riskScore <= review.target ? "#0f7a4a" : CYAN}>
-            <Text fontSize="13px" lineHeight="1.7" whiteSpace="pre-wrap" color={FOREGROUND}>
+            <Text fontSize="13px" lineHeight="1.7" whiteSpace="pre-wrap" color="#111111">
               {finalPass.text}
             </Text>
           </ResultPanel>
